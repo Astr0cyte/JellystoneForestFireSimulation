@@ -31,11 +31,11 @@ public class TreeCellTest {
     }
 
     private static void testSubclassTreeTypes() {
-        Tree oak = new Oak(0.5);
-        Tree birch = new Birch(0.5);
-        Tree eucalyptus = new Eucalyptus(0.5);
-        Tree spruce = new Spruce(0.5);
-        Tree jungle = new Jungle(0.5);
+        Tree oak = new Tree(Tree.TreeSpecies.OAK, 0.5);
+        Tree birch = new Tree(Tree.TreeSpecies.BIRCH, 0.5);
+        Tree eucalyptus = new Tree(Tree.TreeSpecies.EUCALYPTUS, 0.5);
+        Tree spruce = new Tree(Tree.TreeSpecies.SPRUCE, 0.5);
+        Tree jungle = new Tree(Tree.TreeSpecies.JUNGLE, 0.5);
 
         check(
                 "OAK".equals(oak.getTreeType()),
@@ -64,7 +64,7 @@ public class TreeCellTest {
     }
 
     private static void testBurning() {
-        Tree tree = new Eucalyptus(0.5);
+        Tree tree = new Tree(Tree.TreeSpecies.EUCALYPTUS, 0.5);
 
         check(
                 !tree.isBurning(),
@@ -94,7 +94,7 @@ public class TreeCellTest {
     }
 
     private static void testDamageAndDeath() {
-        Tree tree = new Oak(0.5);
+        Tree tree = new Tree(Tree.TreeSpecies.OAK, 0.5);
 
         tree.damage(tree.getMaxHealth());
 
@@ -118,7 +118,7 @@ public class TreeCellTest {
 
     private static void testCellRemoval() {
         Cell cell = new Cell(0, 0);
-        Tree tree = new Birch(0.5);
+        Tree tree = new Tree(Tree.TreeSpecies.BIRCH, 0.5);
 
         cell.plantTree(tree);
 

@@ -7,12 +7,57 @@ public class Tree implements Burnable {
     private double health;
     private double maxHealth;
     private double burnIntensityFactor;
+    private TreeSpecies species;
 
-    public Tree(double spreadability) {
-        this(spreadability, 100.0, 1.0);
+    public enum TreeSpecies {
+        OAK(100.0, 1.0, 1.0),
+        BIRCH(60.0, 0.6, 0.9),
+        SPRUCE(90.0, 1.15, 1.2),
+        EUCALYPTUS(240.0, 1.4, 1.6),
+        JUNGLE(240.0, 0.7, 0.8);
+
+        private final double maxHealth;
+        private final double burnIntensityFactor;
+        private final double spreadabilityMultiplier;
+
+        TreeSpecies(
+                double maxHealth,
+                double burnIntensityFactor,
+                double spreadabilityMultiplier) {
+
+            this.maxHealth = maxHealth;
+            this.burnIntensityFactor = burnIntensityFactor;
+            this.spreadabilityMultiplier = spreadabilityMultiplier;
+        }
+
+        public double getMaxHealth() {
+            return maxHealth;
+        }
+
+        public double getBurnIntensityFactor() {
+            return burnIntensityFactor;
+        }
+
+        public double getSpreadabilityMultiplier() {
+            return spreadabilityMultiplier;
+        }
     }
 
-    protected Tree(
+    public Tree(double spreadability) {
+        this(TreeSpecies.OAK, spreadability);
+    }
+
+    public Tree(TreeSpecies species, double spreadability) {
+        this(
+                species,
+                Math.min(1.0, spreadability * species.getSpreadabilityMultiplier()),
+                species.getMaxHealth(),
+                species.getBurnIntensityFactor()
+        );
+    }
+
+    private Tree(
+            TreeSpecies species,
             double spreadability,
             double maxHealth,
             double burnIntensityFactor) {
@@ -21,6 +66,7 @@ public class Tree implements Burnable {
         validateMaxHealth(maxHealth);
         validateBurnIntensityFactor(burnIntensityFactor);
 
+        this.species = species;
         this.burning = false;
         this.spreadability = spreadability;
         this.burnIntensity = 0.0;
@@ -123,11 +169,11 @@ public class Tree implements Burnable {
     }
 
     public String getTreeType() {
-        if (getClass() == Tree.class) {
-            return "OAK";
-        }
+        return species.name();
+    }
 
-        return getClass().getSimpleName().toUpperCase();
+    public TreeSpecies getSpecies() {
+        return species;
     }
 
     //exceptions
