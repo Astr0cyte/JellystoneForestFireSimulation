@@ -1,13 +1,14 @@
 public class Tree implements Burnable {
-
+    
     private boolean burning;
     private double spreadability;
     private double burnIntensity;
     private boolean alive;
     private double health;
-    private double maxHealth;
-    private double burnIntensityFactor;
+    // private double maxHealth;
+    // private double burnIntensityFactor;
     private TreeSpecies species;
+
 
     public enum TreeSpecies {
         OAK(100.0, 1.0, 1.0),
@@ -20,11 +21,7 @@ public class Tree implements Burnable {
         private final double burnIntensityFactor;
         private final double spreadabilityMultiplier;
 
-        TreeSpecies(
-                double maxHealth,
-                double burnIntensityFactor,
-                double spreadabilityMultiplier) {
-
+        TreeSpecies(double maxHealth, double burnIntensityFactor, double spreadabilityMultiplier) {
             this.maxHealth = maxHealth;
             this.burnIntensityFactor = burnIntensityFactor;
             this.spreadabilityMultiplier = spreadabilityMultiplier;
@@ -47,34 +44,20 @@ public class Tree implements Burnable {
         this(TreeSpecies.OAK, spreadability);
     }
 
+    // Constructor chaining
     public Tree(TreeSpecies species, double spreadability) {
-        this(
-                species,
-                Math.min(1.0, spreadability * species.getSpreadabilityMultiplier()),
-                species.getMaxHealth(),
-                species.getBurnIntensityFactor()
-        );
-    }
-
-    private Tree(
-            TreeSpecies species,
-            double spreadability,
-            double maxHealth,
-            double burnIntensityFactor) {
-
-        validateSpreadability(spreadability);
-        validateMaxHealth(maxHealth);
-        validateBurnIntensityFactor(burnIntensityFactor);
+        
+        // validateSpreadability(spreadability);
+        // validateMaxHealth(maxHealth);
+        // validateBurnIntensityFactor(burnIntensityFactor);
 
         this.species = species;
         this.burning = false;
-        this.spreadability = spreadability;
+        this.spreadability = Math.min(1.0, spreadability * species.getSpreadabilityMultiplier());
         this.burnIntensity = 0.0;
-        this.burnIntensityFactor = burnIntensityFactor;
-        this.maxHealth = maxHealth;
-        this.health = maxHealth;
+        this.health = species.getMaxHealth();
         this.alive = true;
-    }
+    }   
 
     @Override
     public void ignite() {
@@ -83,7 +66,7 @@ public class Tree implements Burnable {
         }
 
         burning = true;
-        burnIntensity = burnIntensityFactor;
+        burnIntensity = species.getBurnIntensityFactor();
     }
 
     // OVERLOADED version
@@ -92,7 +75,7 @@ public class Tree implements Burnable {
             burning = true;
             burnIntensity = Math.max(
                     burnIntensity,
-                    severity * burnIntensityFactor
+                    severity * species.getBurnIntensityFactor()
             );
         }
     }
@@ -101,11 +84,7 @@ public class Tree implements Burnable {
         return health;
     }
 
-    public double getMaxHealth() {
-        return maxHealth;
-    }
-
-    public void damage(double amount) {
+     public void damage(double amount) {
         if (!Double.isFinite(amount) || amount < 0.0) {
             throw new IllegalArgumentException(
                     "Damage must be a finite, non-negative value"
@@ -150,7 +129,8 @@ public class Tree implements Burnable {
         burnIntensity = 0.0;
     }
 
-    public void advanceBurning() {
+    // Advance one "tick" of burning for a tree.
+    public void burnTick() {
         if (!burning || !alive) {
             return;
         }
@@ -160,7 +140,7 @@ public class Tree implements Burnable {
 
     @Override
     public String toString() {
-        return "[health=" + health + "/" + maxHealth
+        return "[health=" + health + "/" + species.maxHealth
                 + ", spreadability=" + spreadability
                 + ", burnIntensity=" + burnIntensity
                 + ", burning=" + burning

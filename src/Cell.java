@@ -1,4 +1,6 @@
+
 class Cell {
+
     private int x;
     private int y;
     private Tree tree;
@@ -41,16 +43,17 @@ class Cell {
         return this.tree;
     }
 
-    public Tree removeTree() {
-        Tree removedTree = tree;
-        tree = null;
-        return removedTree;
+    public void removeTree() {
+        this.tree = null;
     }
 
     public boolean isEmpty() {
-        return !hasTree();
+        if(!this.hasTree()) {
+            return true;
+        }
+        return false;
     }
-    
+
     public double getWindExposure() {
         return windExposure;
     }
@@ -58,4 +61,5 @@ class Cell {
     public void setWindExposure(double windExposure) {
         this.windExposure = windExposure;
     }
+
 }

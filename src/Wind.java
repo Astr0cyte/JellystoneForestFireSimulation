@@ -93,25 +93,6 @@ public class Wind {
         }
     }
 
-    // private double calculateExposure(int row, int col, int rows, int columns, double maximumExposure) {
-
-    //     double directionFactor;
-
-    //     if (direction.equals("NORTH")) {
-    //         directionFactor = (double) (rows - row) / rows;
-    //     } else if (direction.equals("SOUTH")) {
-    //         directionFactor = (double) (row + 1) / rows;
-    //     } else if (direction.equals("WEST")) {
-    //         directionFactor = (double) (columns - col) / columns;
-    //     } else {
-    //         directionFactor = (double) (col + 1) / columns;
-    //     }
-
-    //     return maximumExposure * directionFactor;
-    // }
-
-
-
     public double calculateExposure(int x, int y) {
         if (x < 0 || y < 0) {
             return 0.0;
@@ -149,9 +130,7 @@ public class Wind {
 
         int movementX = targetX - sourceX;
         int movementY = targetY - sourceY;
-        int alignment =
-                movementX * getDirectionX() +
-                movementY * getDirectionY();
+        int alignment = movementX * getDirectionX() + movementY * getDirectionY();
         double targetExposure = calculateExposure(targetX, targetY);
 
         if (alignment > 0) {
@@ -182,9 +161,6 @@ public class Wind {
         }
         return 0;
     }
-
-
-
 
     private static String normaliseDirection(String direction) {
         String trimmedDirection = direction.trim();

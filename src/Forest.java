@@ -1,24 +1,15 @@
-import java.util.Random;
-
 public class Forest {
 
     private Cell[][] grid;
 
-    private double temperature;
-    private double rainfall;
-    private double aridity;
-
     private Wind wind;
 
-    private Random random = new Random();
+    private static final double MIN_SPREADABILITY = 0.3;
+    private static final double MAX_SPREADABILITY = 1.0;
 
     public Forest(int rows, int columns) {
 
         grid = new Cell[rows][columns];
-
-        temperature = 25.0;
-        rainfall = 0.2;
-        aridity = 0.5;
 
         for (int row = 0; row < rows; row++) {
 
@@ -27,14 +18,11 @@ public class Forest {
                 grid[row][col] = new Cell(row, col);
 
                 // 80% chance of there being a tree
-                if (random.nextDouble() < 0.8) {
+                if (Math.random() < 0.8) {
 
-                    double spreadability =
-                            0.3 + random.nextDouble() * 0.7;
+                    double spreadability = MIN_SPREADABILITY + Math.random() * (MAX_SPREADABILITY - MIN_SPREADABILITY);
 
-                    grid[row][col].plantTree(
-                            new Tree(spreadability)
-                    );
+                    grid[row][col].plantTree(new Tree(spreadability));
                 }
             }
         }
@@ -56,11 +44,11 @@ public class Forest {
     public void update() {
 
         spreadFire();
-        advanceBurningTrees();
+        advanceOneBurnTick();
     }
 
-
-    private void advanceBurningTrees() {
+    // 1 burn tick = deplete tree health by certain amount.
+    private void advanceOneBurnTick() {
 
         for (Cell[] row : grid) {
 
@@ -73,7 +61,7 @@ public class Forest {
                 Tree tree = cell.getTree();
 
                 if (tree.isBurning()) {
-                    tree.advanceBurning();
+                    tree.burnTick();
                 }
 
                 if (!tree.isAlive()) {
@@ -83,11 +71,9 @@ public class Forest {
         }
     }
 
-    
     private void spreadFire() {
 
-        boolean[][] igniteNext =
-                new boolean[grid.length][grid[0].length];
+        boolean[][] igniteNext = new boolean[grid.length][grid[0].length];
 
         for (int row = 0; row < grid.length; row++) {
 
@@ -95,8 +81,7 @@ public class Forest {
 
                 Cell cell = grid[row][col];
 
-                if (cell.hasTree() &&
-                    cell.getTree().isBurning()) {
+                if (cell.hasTree() && cell.getTree().isBurning()) {
 
                     trySpread(row, col, row - 1, col, igniteNext);
                     trySpread(row, col, row + 1, col, igniteNext);
@@ -122,18 +107,10 @@ public class Forest {
         }
     }
 
-    private void trySpread(
-        int sourceRow,
-        int sourceCol,
-        int row,
-        int col,
-        boolean[][] igniteNext) {
+    private void trySpread(int sourceRow, int sourceCol, int row, int col, boolean[][] igniteNext) {
 
-        if (row < 0 ||
-            row >= grid.length ||
-            col < 0 ||
-            col >= grid[0].length) {
-
+        // If out of bounds
+        if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length) {
             return;
         }
 
@@ -147,33 +124,21 @@ public class Forest {
             return;
         }
 
-        double chance =
-                target.getTree().getSpreadability();
+        // Base chance is the tree's spreadability (0.0-1.0, already scaled by species in Tree).
+        double chance = target.getTree().getSpreadability();
 
         if (wind != null) {
-
-            chance += wind.getSpreadModifier(
-                    sourceCol,
-                    sourceRow,
-                    col,
-                    row
-            );
-}
-
-        chance += aridity * 0.2;
-
-        chance += (temperature / 100.0) * 0.2;
-
-        chance -= rainfall * 0.2;
+            chance += wind.getSpreadModifier(sourceCol, sourceRow, col, row);
+        }
 
         chance = Math.max(0.0, Math.min(1.0, chance));
 
-        if (random.nextDouble() < chance) {
+        if (Math.random() < chance) {
             igniteNext[row][col] = true;
         }
     }
 
-    public void display() {
+     public void cliTextDisplay() {
 
         for (Cell[] row : grid) {
 

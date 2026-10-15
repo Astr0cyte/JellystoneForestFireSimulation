@@ -14,9 +14,17 @@ public class ForestPanel extends JPanel {
     private Cell lastLightningCell;
     private long lightningStartTime;
 
+    // Pannel becomes 60 * 15 by 40 * 15
+    private static final int CELL_SIZE = 15;
+
     public ForestPanel(Forest forest, Lightning lightning) {
         this.forest = forest;
         this.lightning = lightning;
+
+        Cell[][] grid = forest.getGrid();
+        setPreferredSize(new Dimension(grid[0].length * CELL_SIZE, grid.length * CELL_SIZE));
+
+        setBackground(Color.BLACK);
 
         System.out.println(new java.io.File("images/tree.png").exists());
         System.out.println(new java.io.File("images/fire.png").exists());

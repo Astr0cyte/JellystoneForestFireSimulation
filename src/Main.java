@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.util.Random;
 
 public class Main {
 
@@ -10,13 +9,11 @@ public class Main {
         Wind wind = new Wind(30, "EAST", 30, 20, 15);
         forest.setWind(wind);
 
-
-        Random random = new Random();
-
         IgnitionSource source;
         Lightning lightning = null;
 
-        int choice = random.nextInt(3);
+        // Math.random() gives 0.0-0.99..., so * 3 then (int) gives 0, 1 or 2
+        int choice = (int) (Math.random() * 3);
 
         if (choice == 0) {
             lightning = new Lightning();
@@ -39,24 +36,19 @@ public class Main {
             System.out.println("Ignition failed: " + e.getMessage());
         }
 
-
         JFrame window = new JFrame("Forest Fire Simulation");
 
         ForestPanel panel = new ForestPanel(forest, lightning);
 
         window.add(panel);
-
-        window.setSize(900, 600);
+        window.pack();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setLocationRelativeTo(null);
         window.setVisible(true);
 
         Timer timer = new Timer(500, event -> {
-
             forest.update();
-
             panel.repaint();
-
         });
 
         timer.start();
