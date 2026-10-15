@@ -7,6 +7,8 @@ public class Forest {
     private static final double MIN_SPREADABILITY = 0.3;
     private static final double MAX_SPREADABILITY = 1.0;
 
+    private AllOakSelector garyOak = new AllOakSelector();
+
     public Forest(int rows, int columns) {
 
         grid = new Cell[rows][columns];
@@ -20,9 +22,12 @@ public class Forest {
                 // 80% chance of there being a tree
                 if (Math.random() < 0.8) {
 
+                    //Generate random spreadability value
                     double spreadability = MIN_SPREADABILITY + Math.random() * (MAX_SPREADABILITY - MIN_SPREADABILITY);
-
-                    grid[row][col].plantTree(new Tree(spreadability));
+                    
+                    //Generate ONLY oak trees as a placeholder
+                    Tree.TreeSpecies species = garyOak.selectSpecies();
+                    grid[row][col].plantTree(new Tree(species, spreadability)); // tree creation is going to be moved to factory.
                 }
             }
         }
