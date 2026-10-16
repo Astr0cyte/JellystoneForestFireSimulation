@@ -31,6 +31,5 @@ public class WeightedSelector implements SpeciesSelector {
         }
 
         throw new IllegalStateException("Weights must add up to more than zero");
-
     }
 }

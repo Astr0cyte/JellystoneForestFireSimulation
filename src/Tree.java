@@ -5,11 +5,10 @@ public class Tree implements Burnable {
     private double burnIntensity;
     private boolean alive;
     private double health;
-    // private double maxHealth;
-    // private double burnIntensityFactor;
     private TreeSpecies species;
 
-
+    // The enum effectively acts like a "lookup table" for tree stats. 
+    // This is a very scalable feature.
     public enum TreeSpecies {
         OAK(100.0, 1.0, 1.0),
         BIRCH(60.0, 0.6, 0.9),
