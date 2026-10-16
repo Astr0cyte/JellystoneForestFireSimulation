@@ -1,19 +1,8 @@
-import java.util.EnumMap;
-
 public class Forest {
 
-    private Cell[][] grid;
-
+    private final Cell[][] grid;
+    private final TreeFactory factory = new TreeFactory();
     private Wind wind;
-
-    private static final double MIN_SPREADABILITY = 0.3;
-    private static final double MAX_SPREADABILITY = 1.0;
-
-    // 2 ingredients for weighted random selection of tree species.
-        // 1 - A table of weights
-        // 2 - A random selector which reads those weights
-    private final EnumMap<Tree.TreeSpecies, Double> weights = new EnumMap<>(Tree.TreeSpecies.class);
-    private final WeightedSelector weightedSelector = new WeightedSelector(weights);
 
     public Forest(int rows, int columns) {
 
@@ -28,20 +17,9 @@ public class Forest {
                 // 80% chance of there being a tree
                 if (Math.random() < 0.8) {
 
-                    //Generate random spreadability value
-                    double spreadability = MIN_SPREADABILITY + Math.random() * (MAX_SPREADABILITY - MIN_SPREADABILITY);
-
-                    // Add weights for weighted random selection of trees
-                    weights.put(Tree.TreeSpecies.OAK, 5.0);
-                    weights.put(Tree.TreeSpecies.BIRCH, 2.5);
-                    weights.put(Tree.TreeSpecies.SPRUCE, 2.5);
-                    weights.put(Tree.TreeSpecies.EUCALYPTUS, 4.0);
-                    weights.put(Tree.TreeSpecies.JUNGLE, 1.0);
-                    
-                    // Select a tree based on the weights
-                    Tree.TreeSpecies selectedTreeSpecies = weightedSelector.selectSpecies();
-
-                    grid[row][col].plantTree(new Tree(selectedTreeSpecies, spreadability)); // tree creation is going to be moved to factory.
+                    // Here marks the distinction between planting the tree (forest responsibility)
+                    // and generating the tree (factory responsibility)
+                    grid[row][col].plantTree(factory.generateTree());
                 }
             }
         }
