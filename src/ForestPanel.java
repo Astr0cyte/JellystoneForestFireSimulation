@@ -9,7 +9,11 @@ public class ForestPanel extends JPanel {
     // The panel only draws the forest, so any Tree subtype will do.
     private Forest<? extends Tree> forest;
 
-    private Image treeImage;
+    private Image oakTreeImage;
+    private Image birchTreeImage;
+    private Image spruceTreeImage;
+    private Image eucalyptusTreeImage;
+    private Image jungleTreeImage;
     private Image fireImage;
 
     private Lightning lightning;
@@ -27,9 +31,13 @@ public class ForestPanel extends JPanel {
 
         setPreferredSize(new Dimension(forest.getColumns() * CELL_SIZE, forest.getRows() * CELL_SIZE));
 
-        setBackground(Color.BLACK);
+        setBackground(new Color(20, 29, 0));
 
-        treeImage = loadImage("images/tree.png");
+        oakTreeImage = loadImage("images/oak_tree.png");
+        birchTreeImage = loadImage("images/birch_tree.png");
+        spruceTreeImage = loadImage("images/spruce_tree.png");
+        eucalyptusTreeImage = loadImage("images/eucalyptus_tree.png");
+        jungleTreeImage = loadImage("images/jungle_tree.png");
         fireImage = loadImage("images/fire.png");
         lightningImage = loadImage("images/lightning.png");
     }
@@ -75,66 +83,54 @@ public class ForestPanel extends JPanel {
             }
         }
 
+        // Worked out once per repaint rather than once per cell.
+        boolean showLightning = currentLightningCell != null
+                && System.currentTimeMillis() - lightningStartTime < 3000;
+
         for (int row = 0; row < forest.getRows(); row++) {
 
             for (int col = 0; col < forest.getColumns(); col++) {
 
                 Cell<? extends Tree> cell = forest.getCell(row, col);
 
-                g.setColor(Color.BLACK);
+                // Position and size of the image inside this cell (2px padding).
+                int x = col * cellWidth + 2;
+                int y = row * cellHeight + 2;
+                int width = cellWidth - 4;
+                int height = cellHeight - 4;
 
-                g.fillRect(
-                    col * cellWidth,
-                    row * cellHeight,
-                    cellWidth,
-                    cellHeight
-                );
-
-                if (lightning != null &&
-                    cell == currentLightningCell &&
-                    System.currentTimeMillis() - lightningStartTime < 3000) {
-
-                    drawCell(
-                        g,
-                        lightningImage,
-                        Color.YELLOW,
-                        col * cellWidth + 2,
-                        row * cellHeight + 2,
-                        cellWidth - 4,
-                        cellHeight - 4
-                    );
+                // Each check handles one case and moves on to the next cell,
+                // so there's no nesting. Empty cells need no drawing at all -
+                // super.paintComponent() has already filled the background black.
+                if (showLightning && cell == currentLightningCell) {
+                    drawCell(g, lightningImage, Color.YELLOW, x, y, width, height);
+                    continue;
                 }
-                else {
-                    if (!cell.hasTree()) {
 
-                        // Empty cell stays black
-
-                    }
-                    else if (cell.getTree().isBurning()) {
-
-                        drawCell(
-                            g,
-                            fireImage,
-                            Color.ORANGE,
-                            col * cellWidth + 2,
-                            row * cellHeight + 2,
-                            cellWidth - 4,
-                            cellHeight - 4
-                        );
-                    }
-                    else {
-
-                        drawCell(
-                            g,
-                            treeImage,
-                            Color.GREEN,
-                            col * cellWidth + 2,
-                            row * cellHeight + 2,
-                            cellWidth - 4,
-                            cellHeight - 4
-                        );
-                    }
+                if (!cell.hasTree()) {
+                    continue;
                 }
+
+                Tree tree = cell.getTree();
+
+                if (tree.isBurning()) {
+                    drawCell(g, fireImage, Color.ORANGE, x, y, width, height);
+                    continue;
+                }
+
+                // A switch expression picks a value for each case. Arrow cases
+                // never fall through, so no break is needed. Every species is
+                // listed and there's no default, so adding a species to the
+                // enum without an image here is a compile error.
+                Image speciesImage = switch (tree.getSpecies()) {
+                    case OAK -> oakTreeImage;
+                    case BIRCH -> birchTreeImage;
+                    case SPRUCE -> spruceTreeImage;
+                    case EUCALYPTUS -> eucalyptusTreeImage;
+                    case JUNGLE -> jungleTreeImage;
+                };
+
+                drawCell(g, speciesImage, Color.GREEN, x, y, width, height);
             }
         }
     }
