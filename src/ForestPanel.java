@@ -6,7 +6,6 @@ import javax.swing.*;
 
 public class ForestPanel extends JPanel {
 
-    // The panel only draws the forest, so any Tree subtype will do.
     private Forest<? extends Tree> forest;
 
     private Image oakTreeImage;
@@ -22,7 +21,7 @@ public class ForestPanel extends JPanel {
     private Cell<? extends Tree> lastLightningCell;
     private long lightningStartTime;
 
-    // Pannel becomes 60 * 15 by 40 * 15
+    // Panel becomes 60 * 15 by 40 * 15
     private static final int CELL_SIZE = 15;
 
     public ForestPanel(Forest<? extends Tree> forest, Lightning lightning) {
@@ -42,9 +41,6 @@ public class ForestPanel extends JPanel {
         lightningImage = loadImage("images/lightning.png");
     }
 
-    // ImageIO.read throws a checked IOException if the file can't be read,
-    // so the compiler forces us to handle it. Returning null means
-    // drawCell() falls back to a coloured square.
     private Image loadImage(String path) {
         try {
             return ImageIO.read(new File(path));
@@ -99,9 +95,6 @@ public class ForestPanel extends JPanel {
                 int width = cellWidth - 4;
                 int height = cellHeight - 4;
 
-                // Each check handles one case and moves on to the next cell,
-                // so there's no nesting. Empty cells need no drawing at all -
-                // super.paintComponent() has already filled the background black.
                 if (showLightning && cell == currentLightningCell) {
                     drawCell(g, lightningImage, Color.YELLOW, x, y, width, height);
                     continue;
@@ -118,10 +111,6 @@ public class ForestPanel extends JPanel {
                     continue;
                 }
 
-                // A switch expression picks a value for each case. Arrow cases
-                // never fall through, so no break is needed. Every species is
-                // listed and there's no default, so adding a species to the
-                // enum without an image here is a compile error.
                 Image speciesImage = switch (tree.getSpecies()) {
                     case OAK -> oakTreeImage;
                     case BIRCH -> birchTreeImage;

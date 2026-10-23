@@ -54,8 +54,7 @@ public class Main {
         ForestPanel panel = new ForestPanel(forest, lightning);
         StatsPanel statsPanel = new StatsPanel();
 
-        // A JFrame uses BorderLayout: the forest fills the centre, and the
-        // stats panel sits down the right-hand side.
+        // Stats panel sits on the right next to simulation.
         window.add(panel, BorderLayout.CENTER);
         window.add(statsPanel, BorderLayout.EAST);
         window.pack();
@@ -63,8 +62,6 @@ public class Main {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
 
-        // A lambda can't change a local int, so the tick count is kept in an
-        // AtomicInteger, an object holding an int that can be updated.
         AtomicInteger tick = new AtomicInteger(0);
 
         Timer timer = new Timer(500, event -> {
