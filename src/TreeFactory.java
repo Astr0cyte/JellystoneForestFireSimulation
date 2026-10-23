@@ -14,17 +14,23 @@ public class TreeFactory {
     // Used if the weighted selector can't make a selection.
     private final SpeciesSelector fallbackSelector = new AllOakSelector();
 
-    public Tree generateTree() {
+    public TreeFactory() {
+        applyWeights();
+    }
 
-        //Generate random spreadability value - random variation between individual trees.
-        double spreadability = MIN_SPREADABILITY + Math.random() * (MAX_SPREADABILITY - MIN_SPREADABILITY);
-
-        // Add weights for weighted random selection of trees
+    // Add weights for weighted random selection of trees.
+    private void applyWeights() {
         weights.put(Tree.TreeSpecies.OAK, 5.0);
         weights.put(Tree.TreeSpecies.BIRCH, 2.5);
         weights.put(Tree.TreeSpecies.SPRUCE, 2.5);
         weights.put(Tree.TreeSpecies.EUCALYPTUS, 4.0);
         weights.put(Tree.TreeSpecies.JUNGLE, 1.0);
+    }
+
+    public Tree generateTree() {
+
+        //Generate random spreadability value - random variation between individual trees.
+        double spreadability = MIN_SPREADABILITY + Math.random() * (MAX_SPREADABILITY - MIN_SPREADABILITY);
         
         // Select a tree based on the weights
         Tree.TreeSpecies selectedTreeSpecies;
@@ -36,7 +42,6 @@ public class TreeFactory {
             // Weights are unusable (e.g. all zero) - plant an oak rather than crash.
             selectedTreeSpecies = fallbackSelector.selectSpecies();
         }
-
         return new Tree(selectedTreeSpecies, spreadability);
     }
 }

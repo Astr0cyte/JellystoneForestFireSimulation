@@ -6,8 +6,8 @@ public class Main {
 
         TreeFactory factory = new TreeFactory();
 
-        // factory::generateTree is a method reference: it hands the forest the
-        // generateTree method itself, which the forest calls once per tree it plants.
+        // factory::generateTree hands the forest the generateTree method
+        // itself, which the forest calls once per tree it plants.
         Forest<Tree> forest = new Forest<>(40, 60, factory::generateTree);
 
         // Wind is optional (Forest checks for null), so if it can't be
