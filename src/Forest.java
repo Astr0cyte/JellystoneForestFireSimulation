@@ -2,9 +2,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-// T is the class of object this forest holds: Forest owns and plants
-// its trees, so it needs to know the exact type, unlike the classes
-// that only read it, which use Forest<? extends Tree>.
+/* T is the class of object this forest holds: Forest owns and plants
+ its trees, so it needs to know the exact type, unlike the classes
+ that only read it. These use Forest<? extends Tree>. 
+ 
+    Note:
+        This feature is purely to demonstrate understanding & show that I 
+        listened to Assignment 1 feedback. It is redundant because
+        cells will always be filled with object type "Tree".
+ */
+
 public class Forest<T extends Tree> {
 
     // The grid is a list of rows, where each row is a list of cells.

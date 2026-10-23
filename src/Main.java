@@ -1,3 +1,5 @@
+import java.awt.BorderLayout;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 
 public class Main {
@@ -50,16 +52,27 @@ public class Main {
         JFrame window = new JFrame("Forest Fire Simulation");
 
         ForestPanel panel = new ForestPanel(forest, lightning);
+        StatsPanel statsPanel = new StatsPanel();
 
-        window.add(panel);
+        // A JFrame uses BorderLayout: the forest fills the centre, and the
+        // stats panel sits down the right-hand side.
+        window.add(panel, BorderLayout.CENTER);
+        window.add(statsPanel, BorderLayout.EAST);
         window.pack();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setLocationRelativeTo(null);
         window.setVisible(true);
 
+        // A lambda can't change a local int, so the tick count is kept in an
+        // AtomicInteger, an object holding an int that can be updated.
+        AtomicInteger tick = new AtomicInteger(0);
+
         Timer timer = new Timer(500, event -> {
             forest.update();
+            int currentTick = tick.incrementAndGet();
+
             panel.repaint();
+            statsPanel.update(currentTick);
         });
 
         timer.start();
