@@ -1,9 +1,10 @@
-
-class Cell {
+// T is the type of tree this cell can hold. The bound "extends Tree"
+// guarantees whatever is stored here has all of Tree's methods.
+public class Cell<T extends Tree> {
 
     private int x;
     private int y;
-    private Tree tree;
+    private T tree;
     private double windExposure;
 
     Cell(int x, int y) {
@@ -28,7 +29,7 @@ class Cell {
         y = newY;
     }
 
-    public void plantTree(Tree tree) {
+    public void plantTree(T tree) {
         this.tree = tree;
     }
 
@@ -39,7 +40,7 @@ class Cell {
         return true;
     }
 
-    public Tree getTree() {
+    public T getTree() {
         return this.tree;
     }
 

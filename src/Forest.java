@@ -1,31 +1,43 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class Forest {
+// T is the class of object this forest holds: Forest owns and plants
+// its trees, so it needs to know the exact type, unlike the classes
+// that only read it, which use Forest<? extends Tree>.
+public class Forest<T extends Tree> {
 
     // The grid is a list of rows, where each row is a list of cells.
-    private final List<List<Cell>> grid;
-    private final TreeFactory factory = new TreeFactory();
+    private final List<List<Cell<T>>> grid;
     private Wind wind;
 
-    public Forest(int rows, int columns) {
+    // treeSupplier is anything that can produce a new generic on demand,
+    // e.g. factory::generateTree.
+    public Forest(int rows, int columns, Supplier<T> treeSupplier) {
 
         grid = new ArrayList<>(rows);
 
         for (int row = 0; row < rows; row++) {
 
-            List<Cell> currentRow = new ArrayList<>(columns);
+            List<Cell<T>> currentRow = new ArrayList<>(columns);
 
             for (int col = 0; col < columns; col++) {
 
-                Cell cell = new Cell(row, col);
+                Cell<T> cell = new Cell<>(row, col);
 
                 // 80% chance of there being a tree
                 if (Math.random() < 0.8) {
 
                     // Here marks the distinction between planting the tree (forest responsibility)
                     // and generating the tree (factory responsibility)
-                    cell.plantTree(factory.generateTree());
+                    try {
+                        cell.plantTree(treeSupplier.get());
+                    }
+                    catch (IllegalArgumentException e) {
+                        // An invalid tree shouldn't stop the whole forest being
+                        // built - leave this cell empty and carry on.
+                        System.err.println("Skipped tree at (" + row + ", " + col + "): " + e.getMessage());
+                    }
                 }
 
                 currentRow.add(cell);
@@ -43,8 +55,8 @@ public class Forest {
 
     // }
 
-    // Accessors so other classes don't depend on how the grid is stored.
-    public Cell getCell(int row, int col) {
+    // Accessors for other classes.
+    public Cell<T> getCell(int row, int col) {
         return grid.get(row).get(col);
     }
 
@@ -78,15 +90,15 @@ public class Forest {
     // 1 burn tick = deplete tree health by certain amount.
     private void advanceOneBurnTick() {
 
-        for (List<Cell> row : grid) {
+        for (List<Cell<T>> row : grid) {
 
-            for (Cell cell : row) {
+            for (Cell<T> cell : row) {
 
                 if (!cell.hasTree()) {
                     continue;
                 }
 
-                Tree tree = cell.getTree();
+                T tree = cell.getTree();
 
                 if (tree.isBurning()) {
                     tree.burnTick();
@@ -107,7 +119,7 @@ public class Forest {
 
             for (int col = 0; col < getColumns(); col++) {
 
-                Cell cell = getCell(row, col);
+                Cell<T> cell = getCell(row, col);
 
                 if (cell.hasTree() && cell.getTree().isBurning()) {
 
@@ -141,7 +153,7 @@ public class Forest {
             return;
         }
 
-        Cell target = getCell(row, col);
+        Cell<T> target = getCell(row, col);
 
         if (!target.hasTree()) {
             return;
@@ -167,9 +179,9 @@ public class Forest {
 
      public void cliTextDisplay() {
 
-        for (List<Cell> row : grid) {
+        for (List<Cell<T>> row : grid) {
 
-            for (Cell cell : row) {
+            for (Cell<T> cell : row) {
 
                 if (!cell.hasTree()) {
                     System.out.print(". ");

@@ -11,6 +11,9 @@ public class TreeFactory {
     private final EnumMap<Tree.TreeSpecies, Double> weights = new EnumMap<>(Tree.TreeSpecies.class);
     private final WeightedSelector weightedSelector = new WeightedSelector(weights);
 
+    // Used if the weighted selector can't make a selection.
+    private final SpeciesSelector fallbackSelector = new AllOakSelector();
+
     public Tree generateTree() {
 
         //Generate random spreadability value - random variation between individual trees.
@@ -24,7 +27,15 @@ public class TreeFactory {
         weights.put(Tree.TreeSpecies.JUNGLE, 1.0);
         
         // Select a tree based on the weights
-        Tree.TreeSpecies selectedTreeSpecies = weightedSelector.selectSpecies();
+        Tree.TreeSpecies selectedTreeSpecies;
+
+        try {
+            selectedTreeSpecies = weightedSelector.selectSpecies();
+        }
+        catch (IllegalStateException e) {
+            // Weights are unusable (e.g. all zero) - plant an oak rather than crash.
+            selectedTreeSpecies = fallbackSelector.selectSpecies();
+        }
 
         return new Tree(selectedTreeSpecies, spreadability);
     }

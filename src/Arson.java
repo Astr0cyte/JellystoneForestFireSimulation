@@ -15,7 +15,7 @@ public class Arson extends IgnitionSource {
     }
 
     @Override
-    public void ignite(Forest forest) {
+    public void ignite(Forest<? extends Tree> forest) {
 
         // 1 - Check for out of bounds
         if (!forest.isInBounds(row, col)) {
@@ -25,7 +25,7 @@ public class Arson extends IgnitionSource {
                 " & y: 0-"+forest.getColumns());
         }
 
-        Cell cell = forest.getCell(row, col);
+        Cell<? extends Tree> cell = forest.getCell(row, col);
 
         // 2 - Check for valid tree: "while there is
         // no valid tree and we are within bounds"

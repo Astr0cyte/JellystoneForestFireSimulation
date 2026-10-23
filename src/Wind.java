@@ -60,7 +60,7 @@ public class Wind {
         return radius;
     }
 
-    public void applyWind(Forest forest) {
+    public void applyWind(Forest<? extends Tree> forest) {
         if (forest == null) {
             throw new WindArgumentException("Forest must not be null");
         }
@@ -82,7 +82,7 @@ public class Wind {
 
             for (int col = 0; col < forest.getColumns(); col++) {
 
-                Cell cell = forest.getCell(row, col);
+                Cell<? extends Tree> cell = forest.getCell(row, col);
                 double exposure = calculateExposure(col, row);
 
                 cell.setWindExposure(exposure);

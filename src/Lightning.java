@@ -4,23 +4,23 @@ import java.util.Random;
 
 public class Lightning extends IgnitionSource {
     private Random random = new Random();
-    private List<Cell> struckCells = new ArrayList<>();
-    private Cell lastStruckCell;
+    private List<Cell<? extends Tree>> struckCells = new ArrayList<>();
+    private Cell<? extends Tree> lastStruckCell;
     private static final int MAX_ATTEMPTS = 10;
 
     public Lightning() {
         super(0.8, 0.7);
     }
 
-    public Cell getLastStruckCell() {
+    public Cell<? extends Tree> getLastStruckCell() {
         return lastStruckCell;
     }
-    
-    public void ignite(Forest forest) {
+
+    public void ignite(Forest<? extends Tree> forest) {
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
             int row = random.nextInt(forest.getRows());
             int col = random.nextInt(forest.getColumns());
-            Cell cell = forest.getCell(row, col);
+            Cell<? extends Tree> cell = forest.getCell(row, col);
 
             if (struckCells.contains(cell)) {
                 continue;

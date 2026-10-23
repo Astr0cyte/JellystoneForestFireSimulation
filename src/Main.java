@@ -4,10 +4,21 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Forest forest = new Forest(40, 60);
+        TreeFactory factory = new TreeFactory();
 
-        Wind wind = new Wind(30, "EAST", 30, 20, 15);
-        forest.setWind(wind);
+        // factory::generateTree is a method reference: it hands the forest the
+        // generateTree method itself, which the forest calls once per tree it plants.
+        Forest<Tree> forest = new Forest<>(40, 60, factory::generateTree);
+
+        // Wind is optional (Forest checks for null), so if it can't be
+        // created or applied, run the simulation without it.
+        try {
+            Wind wind = new Wind(30, "EAST", 30, 20, 15);
+            forest.setWind(wind);
+        }
+        catch (WindArgumentException e) {
+            System.out.println("Wind disabled: " + e.getMessage());
+        }
 
         IgnitionSource source;
         Lightning lightning = null;

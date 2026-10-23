@@ -22,5 +22,7 @@ public abstract class IgnitionSource {
         }
     }
 
-    public abstract void ignite(Forest forest);
+    // Ignition sources only set existing trees alight - they never plant
+    // one - so they accept a forest of any Tree subtype.
+    public abstract void ignite(Forest<? extends Tree> forest);
 }

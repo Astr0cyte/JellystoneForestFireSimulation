@@ -46,9 +46,9 @@ public class Tree implements Burnable {
     // Constructor chaining
     public Tree(TreeSpecies species, double spreadability) {
         
-        // validateSpreadability(spreadability);
-        // validateMaxHealth(maxHealth);
-        // validateBurnIntensityFactor(burnIntensityFactor);
+        validateSpreadability(spreadability);
+        validateMaxHealth(species.getMaxHealth());
+        validateBurnIntensityFactor(species.getBurnIntensityFactor());
 
         this.species = species;
         this.burning = false;

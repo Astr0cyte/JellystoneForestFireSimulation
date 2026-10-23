@@ -1,9 +1,13 @@
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class ForestPanel extends JPanel {
 
-    private Forest forest;
+    // The panel only draws the forest, so any Tree subtype will do.
+    private Forest<? extends Tree> forest;
 
     private Image treeImage;
     private Image fireImage;
@@ -11,13 +15,13 @@ public class ForestPanel extends JPanel {
     private Lightning lightning;
     private Image lightningImage;
 
-    private Cell lastLightningCell;
+    private Cell<? extends Tree> lastLightningCell;
     private long lightningStartTime;
 
     // Pannel becomes 60 * 15 by 40 * 15
     private static final int CELL_SIZE = 15;
 
-    public ForestPanel(Forest forest, Lightning lightning) {
+    public ForestPanel(Forest<? extends Tree> forest, Lightning lightning) {
         this.forest = forest;
         this.lightning = lightning;
 
@@ -25,13 +29,32 @@ public class ForestPanel extends JPanel {
 
         setBackground(Color.BLACK);
 
-        System.out.println(new java.io.File("images/tree.png").exists());
-        System.out.println(new java.io.File("images/fire.png").exists());
-        System.out.println(new java.io.File("images/lightning.png").exists());
+        treeImage = loadImage("images/tree.png");
+        fireImage = loadImage("images/fire.png");
+        lightningImage = loadImage("images/lightning.png");
+    }
 
-        treeImage = new ImageIcon("images/tree.png").getImage();
-        fireImage = new ImageIcon("images/fire.png").getImage();
-        lightningImage = new ImageIcon("images/lightning.png").getImage();
+    // ImageIO.read throws a checked IOException if the file can't be read,
+    // so the compiler forces us to handle it. Returning null means
+    // drawCell() falls back to a coloured square.
+    private Image loadImage(String path) {
+        try {
+            return ImageIO.read(new File(path));
+        }
+        catch (IOException e) {
+            System.err.println("Could not load " + path + " (" + e.getMessage() + ") - using a coloured square instead.");
+            return null;
+        }
+    }
+
+    private void drawCell(Graphics g, Image image, Color fallbackColor, int x, int y, int width, int height) {
+        if (image != null) {
+            g.drawImage(image, x, y, width, height, this);
+        }
+        else {
+            g.setColor(fallbackColor);
+            g.fillRect(x, y, width, height);
+        }
     }
 
     @Override
@@ -41,7 +64,7 @@ public class ForestPanel extends JPanel {
         int cellWidth = getWidth() / forest.getColumns();
         int cellHeight = getHeight() / forest.getRows();
 
-        Cell currentLightningCell = null;
+        Cell<? extends Tree> currentLightningCell = null;
 
         if (lightning != null) {
             currentLightningCell = lightning.getLastStruckCell();
@@ -56,7 +79,7 @@ public class ForestPanel extends JPanel {
 
             for (int col = 0; col < forest.getColumns(); col++) {
 
-                Cell cell = forest.getCell(row, col);
+                Cell<? extends Tree> cell = forest.getCell(row, col);
 
                 g.setColor(Color.BLACK);
 
@@ -71,13 +94,14 @@ public class ForestPanel extends JPanel {
                     cell == currentLightningCell &&
                     System.currentTimeMillis() - lightningStartTime < 3000) {
 
-                    g.drawImage(
+                    drawCell(
+                        g,
                         lightningImage,
+                        Color.YELLOW,
                         col * cellWidth + 2,
                         row * cellHeight + 2,
                         cellWidth - 4,
-                        cellHeight - 4,
-                        this
+                        cellHeight - 4
                     );
                 }
                 else {
@@ -88,24 +112,26 @@ public class ForestPanel extends JPanel {
                     }
                     else if (cell.getTree().isBurning()) {
 
-                        g.drawImage(
+                        drawCell(
+                            g,
                             fireImage,
+                            Color.ORANGE,
                             col * cellWidth + 2,
                             row * cellHeight + 2,
                             cellWidth - 4,
-                            cellHeight - 4,
-                            this
+                            cellHeight - 4
                         );
                     }
                     else {
 
-                        g.drawImage(
+                        drawCell(
+                            g,
                             treeImage,
+                            Color.GREEN,
                             col * cellWidth + 2,
                             row * cellHeight + 2,
                             cellWidth - 4,
-                            cellHeight - 4,
-                            this
+                            cellHeight - 4
                         );
                     }
                 }

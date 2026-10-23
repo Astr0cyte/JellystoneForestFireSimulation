@@ -14,7 +14,7 @@ public class Backburning extends IgnitionSource {
     }
 
     @Override
-    public void ignite(Forest forest) {
+    public void ignite(Forest<? extends Tree> forest) {
 
         if (row < 0 || row >= forest.getRows()) {
             return;
@@ -24,7 +24,7 @@ public class Backburning extends IgnitionSource {
 
         for (int col = 0; col < forest.getColumns(); col++) {
 
-            Cell cell = forest.getCell(row, col);
+            Cell<? extends Tree> cell = forest.getCell(row, col);
 
             if (cell.hasTree()) {
 
