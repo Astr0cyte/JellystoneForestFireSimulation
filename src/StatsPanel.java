@@ -21,8 +21,10 @@ public class StatsPanel extends JPanel {
         setPreferredSize(new Dimension(WIDTH, 0));
 
         JLabel title = new JLabel("Statistics");
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 20f));
 
+        setBackground(Color.BLACK);
+    
         add(title);
         add(Box.createVerticalStrut(10));
         add(tickLabel);
@@ -31,6 +33,10 @@ public class StatsPanel extends JPanel {
         add(healthLabel);
         add(Box.createVerticalStrut(10));
         add(speciesLabel);
+
+        for (Component component : getComponents()) {
+            component.setForeground(Color.WHITE);
+        }
 
         update(0);
     }
