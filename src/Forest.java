@@ -1,27 +1,37 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Forest {
 
-    private final Cell[][] grid;
+    // The grid is a list of rows, where each row is a list of cells.
+    private final List<List<Cell>> grid;
     private final TreeFactory factory = new TreeFactory();
     private Wind wind;
 
     public Forest(int rows, int columns) {
 
-        grid = new Cell[rows][columns];
+        grid = new ArrayList<>(rows);
 
         for (int row = 0; row < rows; row++) {
 
+            List<Cell> currentRow = new ArrayList<>(columns);
+
             for (int col = 0; col < columns; col++) {
 
-                grid[row][col] = new Cell(row, col);
+                Cell cell = new Cell(row, col);
 
                 // 80% chance of there being a tree
                 if (Math.random() < 0.8) {
 
                     // Here marks the distinction between planting the tree (forest responsibility)
                     // and generating the tree (factory responsibility)
-                    grid[row][col].plantTree(factory.generateTree());
+                    cell.plantTree(factory.generateTree());
                 }
+
+                currentRow.add(cell);
             }
+
+            grid.add(currentRow);
         }
     }
 
@@ -35,15 +45,15 @@ public class Forest {
 
     // Accessors so other classes don't depend on how the grid is stored.
     public Cell getCell(int row, int col) {
-        return grid[row][col];
+        return grid.get(row).get(col);
     }
 
     public int getRows() {
-        return grid.length;
+        return grid.size();
     }
 
     public int getColumns() {
-        return grid[0].length;
+        return grid.get(0).size();
     }
 
     public boolean isInBounds(int row, int col) {
@@ -68,7 +78,7 @@ public class Forest {
     // 1 burn tick = deplete tree health by certain amount.
     private void advanceOneBurnTick() {
 
-        for (Cell[] row : grid) {
+        for (List<Cell> row : grid) {
 
             for (Cell cell : row) {
 
@@ -91,13 +101,13 @@ public class Forest {
 
     private void spreadFire() {
 
-        boolean[][] igniteNext = new boolean[grid.length][grid[0].length];
+        boolean[][] igniteNext = new boolean[getRows()][getColumns()];
 
-        for (int row = 0; row < grid.length; row++) {
+        for (int row = 0; row < getRows(); row++) {
 
-            for (int col = 0; col < grid[row].length; col++) {
+            for (int col = 0; col < getColumns(); col++) {
 
-                Cell cell = grid[row][col];
+                Cell cell = getCell(row, col);
 
                 if (cell.hasTree() && cell.getTree().isBurning()) {
 
@@ -114,12 +124,12 @@ public class Forest {
         }
 
         // Ignite AFTER checking the entire grid
-        for (int row = 0; row < grid.length; row++) {
+        for (int row = 0; row < getRows(); row++) {
 
-            for (int col = 0; col < grid[row].length; col++) {
+            for (int col = 0; col < getColumns(); col++) {
 
                 if (igniteNext[row][col]) {
-                    grid[row][col].getTree().ignite();
+                    getCell(row, col).getTree().ignite();
                 }
             }
         }
@@ -131,7 +141,7 @@ public class Forest {
             return;
         }
 
-        Cell target = grid[row][col];
+        Cell target = getCell(row, col);
 
         if (!target.hasTree()) {
             return;
@@ -157,7 +167,7 @@ public class Forest {
 
      public void cliTextDisplay() {
 
-        for (Cell[] row : grid) {
+        for (List<Cell> row : grid) {
 
             for (Cell cell : row) {
 
