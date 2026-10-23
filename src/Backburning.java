@@ -16,19 +16,15 @@ public class Backburning extends IgnitionSource {
     @Override
     public void ignite(Forest forest) {
 
-        Cell[][] grid = forest.getGrid();
-
-        if (row < 0 || row >= grid.length) {
+        if (row < 0 || row >= forest.getRows()) {
             return;
         }
 
         double frequency = 2 * Math.PI / WAVELENGTH;
 
-        for (int col = 0;
-             col < grid[row].length;
-             col++) {
+        for (int col = 0; col < forest.getColumns(); col++) {
 
-            Cell cell = grid[row][col];
+            Cell cell = forest.getCell(row, col);
 
             if (cell.hasTree()) {
 

@@ -25,8 +25,29 @@ public class Forest {
         }
     }
 
-    public Cell[][] getGrid() {
-        return grid;
+    // public Stream toTreeStream(){
+    //     // stream converter from grid
+    //     return Stream();
+    // }
+    // public toFireStream(){
+
+    // }
+
+    // Accessors so other classes don't depend on how the grid is stored.
+    public Cell getCell(int row, int col) {
+        return grid[row][col];
+    }
+
+    public int getRows() {
+        return grid.length;
+    }
+
+    public int getColumns() {
+        return grid[0].length;
+    }
+
+    public boolean isInBounds(int row, int col) {
+        return row >= 0 && row < getRows() && col >= 0 && col < getColumns();
     }
 
     public void setWind(Wind wind) {
@@ -106,8 +127,7 @@ public class Forest {
 
     private void trySpread(int sourceRow, int sourceCol, int row, int col, boolean[][] igniteNext) {
 
-        // If out of bounds
-        if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length) {
+        if (!isInBounds(row, col)) {
             return;
         }
 

@@ -65,27 +65,24 @@ public class Wind {
             throw new WindArgumentException("Forest must not be null");
         }
 
-        Cell[][] grid = forest.getGrid();
-
-        if (grid.length == 0 || grid[0].length == 0) {
+        if (forest.getRows() == 0 || forest.getColumns() == 0) {
             throw new WindArgumentException(
                     "Wind cannot be applied to an empty forest"
             );
         }
 
-        if (startY >= grid.length ||
-            startX >= grid[startY].length) {
+        if (!forest.isInBounds(startY, startX)) {
 
             throw new WindArgumentException(
                     "Starting cell must be inside the forest"
             );
         }
 
-        for (int row = 0; row < grid.length; row++) {
+        for (int row = 0; row < forest.getRows(); row++) {
 
-            for (int col = 0; col < grid[row].length; col++) {
+            for (int col = 0; col < forest.getColumns(); col++) {
 
-                Cell cell = grid[row][col];
+                Cell cell = forest.getCell(row, col);
                 double exposure = calculateExposure(col, row);
 
                 cell.setWindExposure(exposure);

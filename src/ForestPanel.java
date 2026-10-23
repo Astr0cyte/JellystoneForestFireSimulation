@@ -21,8 +21,7 @@ public class ForestPanel extends JPanel {
         this.forest = forest;
         this.lightning = lightning;
 
-        Cell[][] grid = forest.getGrid();
-        setPreferredSize(new Dimension(grid[0].length * CELL_SIZE, grid.length * CELL_SIZE));
+        setPreferredSize(new Dimension(forest.getColumns() * CELL_SIZE, forest.getRows() * CELL_SIZE));
 
         setBackground(Color.BLACK);
 
@@ -39,10 +38,8 @@ public class ForestPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Cell[][] grid = forest.getGrid();
-
-        int cellWidth = getWidth() / grid[0].length;
-        int cellHeight = getHeight() / grid.length;
+        int cellWidth = getWidth() / forest.getColumns();
+        int cellHeight = getHeight() / forest.getRows();
 
         Cell currentLightningCell = null;
 
@@ -55,11 +52,11 @@ public class ForestPanel extends JPanel {
             }
         }
 
-        for (int row = 0; row < grid.length; row++) {
+        for (int row = 0; row < forest.getRows(); row++) {
 
-            for (int col = 0; col < grid[row].length; col++) {
+            for (int col = 0; col < forest.getColumns(); col++) {
 
-                Cell cell = grid[row][col];
+                Cell cell = forest.getCell(row, col);
 
                 g.setColor(Color.BLACK);
 

@@ -17,26 +17,21 @@ public class Arson extends IgnitionSource {
     @Override
     public void ignite(Forest forest) {
 
-        Cell[][] grid = forest.getGrid();
-
         // 1 - Check for out of bounds
-        if (row < 0 || row >= grid.length || 
-            col < 0 || col >= grid[0].length) {
+        if (!forest.isInBounds(row, col)) {
 
             throw new IllegalArgumentException(
-                "Coordinates must be within x: 0-"+grid.length+
-                " & y: 0-"+grid[0].length);
+                "Coordinates must be within x: 0-"+forest.getRows()+
+                " & y: 0-"+forest.getColumns());
         }
 
-        Cell cell = grid[row][col];
+        Cell cell = forest.getCell(row, col);
 
-        // 2 - Check for valid tree: "while there is 
+        // 2 - Check for valid tree: "while there is
         // no valid tree and we are within bounds"
-        while(!cell.hasTree() && (row >= 0 &&  
-            row < grid.length && col >= 0 && 
-            col < grid[0].length)) {
+        while(!cell.hasTree() && forest.isInBounds(row, col)) {
 
-            cell = grid[row++][col];
+            cell = forest.getCell(row++, col);
         }
 
         // 3 - Edge case: retried for valid cell 

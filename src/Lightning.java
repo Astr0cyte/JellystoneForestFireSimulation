@@ -17,12 +17,10 @@ public class Lightning extends IgnitionSource {
     }
     
     public void ignite(Forest forest) {
-        Cell[][] grid = forest.getGrid();
-
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-            int row = random.nextInt(grid.length);
-            int col = random.nextInt(grid[0].length);
-            Cell cell = grid[row][col];
+            int row = random.nextInt(forest.getRows());
+            int col = random.nextInt(forest.getColumns());
+            Cell cell = forest.getCell(row, col);
 
             if (struckCells.contains(cell)) {
                 continue;
