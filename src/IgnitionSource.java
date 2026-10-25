@@ -10,7 +10,7 @@ public record IgnitionSource(String sourceName, double severity,
 
         if(behaviour == null) {
             throw new IllegalArgumentException(
-                "An ignition source is required."
+                "An ignition behaviour type is required."
             );
         }
         

@@ -1,0 +1,90 @@
+// Utility class holding the ignition algorithms (the "strategies").
+// Each method builds and returns an IgnitionBehaviour as a lambda, which an
+// IgnitionSource record then holds and runs when it is ignited.
+public final class IgnitionBehaviours {
+
+    private static final double WAVELENGTH = 3.0; // For backburning ignition behaviour
+
+    // Private so nobody can create an IgnitionBehaviours object - it only
+    // exists to group static methods.
+    private IgnitionBehaviours() {
+
+    }
+
+    // Calling this does NOT light anything. It builds the ignition code,
+    // which remembers `row`, and returns it to be run later.
+    static IgnitionBehaviour backburning(int row) {
+
+        // This lambda IS an IgnitionBehaviour: its two parameters match
+        // IgnitionBehaviour.ignite(Forest<? extends Tree>, IgnitionSource),
+        // and its body becomes that method's body. Java works out the
+        // parameter types from the interface, so they aren't written here.
+        //
+        // `row` comes from the enclosing method, not the lambda - the lambda
+        // captures it. That's only allowed because row is never changed.
+        return (forest, ignitionSource) -> {
+
+            if (row < 0 || row >= forest.getRows()) {
+                return;
+            }
+
+            double frequency = 2 * Math.PI / WAVELENGTH;
+
+            for (int col = 0; col < forest.getColumns(); col++) {
+
+                Cell<? extends Tree> cell = forest.getCell(row, col);
+
+                if (cell.hasTree()) {
+
+                    double wave = (Math.sin(col * frequency) + 1) / 2;
+
+                    // Only the troughs of the wave catch immediately - the
+                    // rest of the line fills in as fire spreads from there.
+                    // Severity and spreadability are read from the record
+                    // that's running this behaviour.
+                    if (wave < ignitionSource.spreadability()) {
+                        cell.getTree().ignite(ignitionSource.severity());
+                    }
+                }
+            }
+        };
+    }
+
+    static IgnitionBehaviour arson(int row, int col) {
+        
+        return (forest, ignitionSource) -> {
+
+            // Local copy: the captured variables (row) must be effectively final,
+            // so the search further below moves this instead.
+            int searchRow = row;
+
+            if (!forest.isInBounds(row, col)) {
+
+                throw new IllegalArgumentException(
+                    "Coordinates must be within x: 0-"+forest.getRows()+
+                    " & y: 0-"+forest.getColumns());
+            }
+
+            Cell<? extends Tree> cell = forest.getCell(row, col);
+
+
+            // "While there is no valid tree and we are within bounds."
+            while(!cell.hasTree() && forest.isInBounds(searchRow, col)) {
+                cell = forest.getCell(searchRow, col);
+                searchRow++;
+            }
+
+            // Ran out of bounds while retrying for a valid cell.
+            // hasTree() would still be false if this is the case.
+            if (!cell.hasTree()) {
+
+                throw new IllegalArgumentException(
+                    "Ran out of bounds while trying to find a tree to ignite.");
+            }
+            
+            if (cell.getTree().getSpreadability() >= ignitionSource.spreadability()) {
+                cell.getTree().ignite(ignitionSource.severity());
+            }
+        };
+    }
+}

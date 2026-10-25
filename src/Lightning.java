@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Lightning extends IgnitionSource {
+public class Lightning implements IgnitionBehaviour {
     private Random random = new Random();
     private List<Cell<? extends Tree>> struckCells = new ArrayList<>();
     private Cell<? extends Tree> lastStruckCell;

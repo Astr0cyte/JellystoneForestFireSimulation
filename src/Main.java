@@ -38,8 +38,15 @@ public class Main {
             System.out.println("Ignition source: Arson");
 
         } else {
-            source = new Backburning(20);
-            System.out.println("Ignition source: Backburning");
+            // Controlled and deterministic (unlike Arson/Lightning): lit in a
+            // staggered, wavelike pattern along the row rather than all at once.
+            source = new IgnitionSource(
+                "Backburning",
+                0.7,                                // severity
+                0.4,                                // spreadability
+                IgnitionBehaviours.backburning(20)  // behaviour: wave along row 20
+            );
+            System.out.println("Ignition source: " + source.sourceName());
         }
 
         try {
