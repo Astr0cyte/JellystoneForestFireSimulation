@@ -1,17 +1,21 @@
-public abstract class IgnitionSource {
+public record IgnitionSource(String sourceName, double severity, 
+                            double spreadability, IgnitionBehaviour behaviour) {
 
-    protected double severity;
-    protected double spreadability;
+    public IgnitionSource {
+        if(sourceName == null) {
+            throw new IllegalArgumentException(
+                "A name label for the ignition source is required."
+            );
+        }
 
-    public IgnitionSource(
-            double severity,
-            double spreadability) {
-
+        if(behaviour == null) {
+            throw new IllegalArgumentException(
+                "An ignition source is required."
+            );
+        }
+        
         validateValue("Severity", severity);
         validateValue("Spreadability", spreadability);
-
-        this.severity = severity;
-        this.spreadability = spreadability;
     }
 
     private void validateValue(String name, double value) {
@@ -22,7 +26,7 @@ public abstract class IgnitionSource {
         }
     }
 
-    // Ignition sources only set existing trees alight - they never plant
-    // one - so they accept a forest of any Tree subtype.
-    public abstract void ignite(Forest<? extends Tree> forest);
+    public void ignite(Forest<? extends Tree> forest) {
+        behaviour.ignite(forest, this);
+    }
 }
