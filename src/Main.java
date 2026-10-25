@@ -29,12 +29,32 @@ public class Main {
         int choice = (int) (Math.random() * 3);
 
         if (choice == 0) {
+            // Unlike the lambdas, this object is also needed by ForestPanel to
+            // draw where the strike landed, so it's stored in `lightning` too.
+
             lightning = new Lightning();
-            source = lightning;
+
+            source = new IgnitionSource(
+                "Lightning", // label
+                0.8, 
+                0.7, 
+                lightning // behaviour parameter - random strike.
+            );
+            
             System.out.println("Ignition source: Lightning");
 
         } else if (choice == 1) {
-            source = new Arson(20, 20);
+            // Weaker than a lightning strike (severity 0.8): a deliberately
+            // lit fire is smaller and only takes hold on sufficiently
+            // flammable fuel.
+
+            source = new IgnitionSource(
+                "Arson", 
+                0.55, 
+                0.5, 
+                IgnitionBehaviours.arson(20,20) // behaviour parameter (lambda)
+            );
+            
             System.out.println("Ignition source: Arson");
 
         } else {
@@ -42,9 +62,9 @@ public class Main {
             // staggered, wavelike pattern along the row rather than all at once.
             source = new IgnitionSource(
                 "Backburning",
-                0.7,                                // severity
-                0.4,                                // spreadability
-                IgnitionBehaviours.backburning(20)  // behaviour: wave along row 20
+                0.7,                                
+                0.4,                           
+                IgnitionBehaviours.backburning(20)  // behaviour parameter (lambda)
             );
             System.out.println("Ignition source: " + source.sourceName());
         }
