@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.swing.*;
 
 public class StatsPanel extends JPanel {
@@ -48,10 +50,11 @@ public class StatsPanel extends JPanel {
             component.setForeground(Color.WHITE);
         }
 
-        update(0, 0, 0, 0, 0);
+        update(0, 0, 0, 0, 0, Map.of());
     }
 
-    public void update(int tick, long amtOfTrees, long healthyTreeCount, long amtBurning, double avgHealth) {
+    public void update(int tick, long amtOfTrees, long healthyTreeCount, 
+                        long amtBurning, double avgHealth, Map<Tree.TreeSpecies, Long> speciesCount) {
 
         tickLabel.setText("Tick: " + tick);
         treesLabel.setText("Trees: " + amtOfTrees);
@@ -59,7 +62,11 @@ public class StatsPanel extends JPanel {
         burningLabel.setText("Burning: " + amtBurning);
         healthLabel.setText("Average health: " + avgHealth);
 
-        // JLabel understands basic HTML, which is the easiest way to get multiple lines.
-        speciesLabel.setText("<html>By species:<br>-</html>");
+        // Yields one "SPECIES: count" line per species.
+        String speciesLines = speciesCount.entrySet().stream()
+                .map(entry -> entry.getKey() + ": " + entry.getValue())
+                .collect(Collectors.joining("<br>"));
+
+        speciesLabel.setText("<html>Count by species:<br>" + speciesLines + "</html>");
     }
 }

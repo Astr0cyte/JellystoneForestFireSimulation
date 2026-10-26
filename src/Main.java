@@ -1,5 +1,8 @@
 import java.awt.BorderLayout;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import javax.swing.*;
 
 public class Main {
@@ -93,35 +96,41 @@ public class Main {
 
         AtomicInteger tick = new AtomicInteger(0);
 
-        Timer timer = new Timer(TICK_DELAY, event -> {
+        Timer timer;
+        timer = new Timer(TICK_DELAY, event -> {
             forest.update();
 
             int currentTick = tick.incrementAndGet();
 
             long trees = forest.cellStream()
-                               .filter((Cell<Tree> cell) -> cell.hasTree())
-                               .count();
-
+                    .filter((Cell<Tree> cell) -> cell.hasTree())
+                    .count();
+            
             long healthy = forest.cellStream()
-                                      .filter((Cell<Tree> cell) -> cell.hasTree())
-                                      .map(cell -> cell.getTree())
-                                      .filter((Tree tree) -> !tree.isBurning())
-                                      .count();
-
+                    .filter((Cell<Tree> cell) -> cell.hasTree())
+                    .map(cell -> cell.getTree())
+                    .filter((Tree tree) -> !tree.isBurning())
+                    .count();
+            
             long burning = forest.cellStream()
-                                 .filter((Cell<Tree> cell) -> cell.hasTree())
-                                 .map(cell -> cell.getTree())
-                                 .filter((Tree tree) -> tree.isBurning())
-                                 .count();
-
+                    .filter((Cell<Tree> cell) -> cell.hasTree())
+                    .map(cell -> cell.getTree())
+                    .filter((Tree tree) -> tree.isBurning())
+                    .count();
+            
             double health = forest.cellStream()
-                                  .filter((Cell<Tree> cell) -> cell.hasTree())
-                                  .mapToDouble(cell -> cell.getTree().getHealth()) // Map into the health value
-                                  .average()
-                                  .orElse(0.0);
-
+                    .filter((Cell<Tree> cell) -> cell.hasTree())
+                    .mapToDouble(cell -> cell.getTree().getHealth()) // Map into the health value
+                    .average()
+                    .orElse(0.0);
+            
+            Map<Tree.TreeSpecies, Long> speciesCount = forest.cellStream()
+                    .filter((Cell<Tree> cell) -> cell.hasTree())
+                    .map(cell -> cell.getTree())
+                    .collect(Collectors.groupingBy(Tree::getSpecies, Collectors.counting()));
+            
             panel.repaint();
-            statsPanel.update(currentTick, trees, healthy, burning, health);
+            statsPanel.update(currentTick, trees, healthy, burning, health, speciesCount);
         });
 
         timer.start();
