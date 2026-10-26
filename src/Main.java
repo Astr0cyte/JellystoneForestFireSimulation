@@ -102,14 +102,26 @@ public class Main {
                                .filter((Cell<Tree> cell) -> cell.hasTree())
                                .count();
 
+            long healthy = forest.cellStream()
+                                      .filter((Cell<Tree> cell) -> cell.hasTree())
+                                      .map(cell -> cell.getTree())
+                                      .filter((Tree tree) -> !tree.isBurning())
+                                      .count();
+
             long burning = forest.cellStream()
                                  .filter((Cell<Tree> cell) -> cell.hasTree())
                                  .map(cell -> cell.getTree())
                                  .filter((Tree tree) -> tree.isBurning())
                                  .count();
 
+            double health = forest.cellStream()
+                                  .filter((Cell<Tree> cell) -> cell.hasTree())
+                                  .mapToDouble(cell -> cell.getTree().getHealth()) // Map into the health value
+                                  .average()
+                                  .orElse(0.0);
+
             panel.repaint();
-            statsPanel.update(currentTick, trees, burning);
+            statsPanel.update(currentTick, trees, healthy, burning, health);
         });
 
         timer.start();

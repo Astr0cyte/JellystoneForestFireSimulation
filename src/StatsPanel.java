@@ -7,6 +7,7 @@ public class StatsPanel extends JPanel {
 
     private final JLabel tickLabel = new JLabel();
     private final JLabel treesLabel = new JLabel();
+    private final JLabel healthyTreesLabel = new JLabel();
     private final JLabel burningLabel = new JLabel();
     private final JLabel healthLabel = new JLabel();
     private final JLabel speciesLabel = new JLabel();
@@ -26,6 +27,7 @@ public class StatsPanel extends JPanel {
         title.setFont(title.getFont().deriveFont(Font.BOLD, 20f));
         tickLabel.setFont(tickLabel.getFont().deriveFont(16.f));
         treesLabel.setFont(treesLabel.getFont().deriveFont(16.f));
+        healthyTreesLabel.setFont(healthyTreesLabel.getFont().deriveFont(16.f));
         burningLabel.setFont(burningLabel.getFont().deriveFont(16.f));
         healthLabel.setFont(healthLabel.getFont().deriveFont(16.f));
         speciesLabel.setFont(speciesLabel.getFont().deriveFont(16.f));
@@ -36,6 +38,7 @@ public class StatsPanel extends JPanel {
         add(Box.createVerticalStrut(10));
         add(tickLabel);
         add(treesLabel);
+        add(healthyTreesLabel);
         add(burningLabel);
         add(healthLabel);
         add(Box.createVerticalStrut(10));
@@ -45,16 +48,16 @@ public class StatsPanel extends JPanel {
             component.setForeground(Color.WHITE);
         }
 
-        update(0, 0, 0);
+        update(0, 0, 0, 0, 0);
     }
 
-    // TODO: add a ForestStats parameter and fill the labels from it.
-    public void update(int tick, long amtOfTrees, long amtBurning) {
+    public void update(int tick, long amtOfTrees, long healthyTreeCount, long amtBurning, double avgHealth) {
 
         tickLabel.setText("Tick: " + tick);
-        treesLabel.setText("Trees: -" + amtOfTrees);
+        treesLabel.setText("Trees: " + amtOfTrees);
+        healthyTreesLabel.setText("Unburnt trees: " + healthyTreeCount);
         burningLabel.setText("Burning: " + amtBurning);
-        healthLabel.setText("Average health: -");
+        healthLabel.setText("Average health: " + avgHealth);
 
         // JLabel understands basic HTML, which is the easiest way to get multiple lines.
         speciesLabel.setText("<html>By species:<br>-</html>");
