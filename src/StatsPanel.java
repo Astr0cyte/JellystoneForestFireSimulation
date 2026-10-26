@@ -11,6 +11,7 @@ public class StatsPanel extends JPanel {
     private final JLabel healthLabel = new JLabel();
     private final JLabel speciesLabel = new JLabel();
 
+
     public StatsPanel() {
 
         // BoxLayout stacks the labels top to bottom.
@@ -20,8 +21,14 @@ public class StatsPanel extends JPanel {
         // Only the width matters - BorderLayout.EAST stretches the height to fit the window.
         setPreferredSize(new Dimension(WIDTH, 0));
 
-        JLabel title = new JLabel("Statistics");
+        JLabel title = new JLabel("Forest Stats");
+
         title.setFont(title.getFont().deriveFont(Font.BOLD, 20f));
+        tickLabel.setFont(tickLabel.getFont().deriveFont(16.f));
+        treesLabel.setFont(treesLabel.getFont().deriveFont(16.f));
+        burningLabel.setFont(burningLabel.getFont().deriveFont(16.f));
+        healthLabel.setFont(healthLabel.getFont().deriveFont(16.f));
+        speciesLabel.setFont(speciesLabel.getFont().deriveFont(16.f));
 
         setBackground(Color.BLACK);
     
@@ -38,15 +45,15 @@ public class StatsPanel extends JPanel {
             component.setForeground(Color.WHITE);
         }
 
-        update(0);
+        update(0, 0, 0);
     }
 
     // TODO: add a ForestStats parameter and fill the labels from it.
-    public void update(int tick) {
+    public void update(int tick, long amtOfTrees, long amtBurning) {
 
         tickLabel.setText("Tick: " + tick);
-        treesLabel.setText("Trees: -");
-        burningLabel.setText("Burning: -");
+        treesLabel.setText("Trees: -" + amtOfTrees);
+        burningLabel.setText("Burning: " + amtBurning);
         healthLabel.setText("Average health: -");
 
         // JLabel understands basic HTML, which is the easiest way to get multiple lines.

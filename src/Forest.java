@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.*;
 
 /* T is the class of object this forest holds: Forest owns and plants
  its trees, so it needs to know the exact type, unlike the classes
@@ -15,7 +16,8 @@ import java.util.function.Supplier;
 public class Forest<T extends Tree> {
 
     // The grid is a list of rows, where each row is a list of cells.
-    private final List<List<Cell<T>>> grid;
+    // COMP2100: ROW-MAJOR ORDERING!
+    private final List<List<Cell<T>>> grid; 
     private Wind wind;
 
     // treeSupplier is anything that can produce a new generic on demand,
@@ -54,13 +56,11 @@ public class Forest<T extends Tree> {
         }
     }
 
-    // public Stream toTreeStream(){
-    //     // stream converter from grid
-    //     return Stream();
-    // }
-    // public toFireStream(){
-
-    // }
+    public Stream<Cell <T>> cellStream() {
+        return grid.stream()
+                   .flatMap(List::stream); // Turns the stream of 40 rows into a single stream of cells.
+        
+    }
 
     // Accessors for other classes.
     public Cell<T> getCell(int row, int col) {

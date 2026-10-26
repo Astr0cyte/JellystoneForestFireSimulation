@@ -4,6 +4,8 @@ import javax.swing.*;
 
 public class Main {
 
+    private static final int TICK_DELAY = 750;
+
     public static void main(String[] args) {
 
         TreeFactory factory = new TreeFactory();
@@ -91,12 +93,23 @@ public class Main {
 
         AtomicInteger tick = new AtomicInteger(0);
 
-        Timer timer = new Timer(500, event -> {
+        Timer timer = new Timer(TICK_DELAY, event -> {
             forest.update();
+
             int currentTick = tick.incrementAndGet();
 
+            long trees = forest.cellStream()
+                               .filter((Cell<Tree> cell) -> cell.hasTree())
+                               .count();
+
+            long burning = forest.cellStream()
+                                 .filter((Cell<Tree> cell) -> cell.hasTree())
+                                 .map(cell -> cell.getTree())
+                                 .filter((Tree tree) -> tree.isBurning())
+                                 .count();
+
             panel.repaint();
-            statsPanel.update(currentTick);
+            statsPanel.update(currentTick, trees, burning);
         });
 
         timer.start();
