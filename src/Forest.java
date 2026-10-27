@@ -1,7 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 import java.util.stream.*;
+import java.util.Arrays;
 
 /* T is the class of object this forest holds: Forest owns and plants
  its trees, so it needs to know the exact type, unlike the classes
@@ -19,6 +21,9 @@ public class Forest<T extends Tree> {
     // COMP2100: ROW-MAJOR ORDERING!
     private final List<List<Cell<T>>> grid; 
     private Wind wind;
+    private static final int[][] NEIGHBOUR_OFFSETS = {{-1, -1}, {-1, 0}, {-1, +1},
+                                                      {0, -1},  /*CELL*/ {0, +1},
+                                                      {+1, -1}, {+1, 0}, {+1, +1}};
 
     // treeSupplier is anything that can produce a new generic on demand,
     // e.g. factory::generateTree.
@@ -58,7 +63,7 @@ public class Forest<T extends Tree> {
 
     public Stream<Cell <T>> cellStream() {
         return grid.stream()
-                   .flatMap(List::stream); // Turns the stream of 40 rows into a single stream of cells.
+                   .flatMap(List::stream); // Turns the stream of 40 rows into a single stream of (2400) cells.
         
     }
 
@@ -77,6 +82,25 @@ public class Forest<T extends Tree> {
 
     public boolean isInBounds(int row, int col) {
         return row >= 0 && row < getRows() && col >= 0 && col < getColumns();
+    }
+
+    // Returns every cell touching the given cell (up to 8).
+    // Skips any out of bounds cell selections.
+    public List<Cell<T>> neighbours(Cell<T> cell) {
+
+        List<Cell<T>> result = new ArrayList<>();
+
+        for (int[] offset : NEIGHBOUR_OFFSETS) {
+
+            int row = cell.getRow() + offset[0];
+            int col = cell.getCol() + offset[1];
+
+            if (isInBounds(row, col)) {
+                result.add(getCell(row, col));
+            }
+        }
+
+        return result;
     }
 
     public void setWind(Wind wind) {
@@ -154,6 +178,8 @@ public class Forest<T extends Tree> {
         }
     }
 
+    /* DEPRECATED:
+
     private void trySpread(int sourceRow, int sourceCol, int row, int col, boolean[][] igniteNext) {
 
         if (!isInBounds(row, col)) {
@@ -182,9 +208,30 @@ public class Forest<T extends Tree> {
         if (Math.random() < chance) {
             igniteNext[row][col] = true;
         }
+    } */
+
+    // Read-only version of trySpread() - returns a boolean instead of writing the boolean into array.
+    private boolean catchesFire(Cell<T> source, Cell<T> target) {
+        if (!target.hasTree() || target.getTree().isBurning()) {
+            return false;
+        }
+
+        double chance = target.getTree().getSpreadability();
+
+        if (wind != null) {
+            // Wind uses x = column, y = row, so columns come first.
+            chance += wind.getSpreadModifier(
+                source.getCol(), source.getRow(),
+                target.getCol(), target.getRow()
+            );
+        }
+
+        chance = Math.max(0.0, Math.min(1.0, chance));
+
+        return ThreadLocalRandom.current().nextDouble() < chance;
     }
 
-     public void cliTextDisplay() {
+    public void cliTextDisplay() {
 
         for (List<Cell<T>> row : grid) {
 

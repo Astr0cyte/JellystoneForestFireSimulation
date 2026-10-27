@@ -203,13 +203,8 @@ public class TreeCellTest {
     @Test
     void cellStoresCoordinates() {
         Cell<Tree> cell = new Cell<>(2, 3);
-        assertEquals(2, cell.getX());
-        assertEquals(3, cell.getY());
-
-        cell.setX(5);
-        cell.setY(7);
-        assertEquals(5, cell.getX());
-        assertEquals(7, cell.getY());
+        assertEquals(2, cell.getRow());
+        assertEquals(3, cell.getCol());
     }
 
     @Test

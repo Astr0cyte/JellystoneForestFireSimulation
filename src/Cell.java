@@ -2,31 +2,23 @@
 // guarantees whatever is stored here has all of Tree's methods.
 public class Cell<T extends Tree> {
 
-    private int x;
-    private int y;
+    private final int row;
+    private final int col;
     private T tree;
     private double windExposure;
 
-    Cell(int x, int y) {
-        this.x = x;
-        this.y = y;
+    Cell(int row, int col) {
+        this.row = row;
+        this.col = col;
         this.tree = null;
     }
     
-    public int getX() {
-        return x;
+    public int getRow() {
+        return row;
     }
 
-    public int getY() {
-        return y;
-    }
-
-    public void setX(int newX) {
-        x = newX;
-    }
-
-    public void setY(int newY) {
-        y = newY;
+    public int getCol() {
+        return col;
     }
 
     public void plantTree(T tree) {
