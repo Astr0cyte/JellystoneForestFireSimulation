@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 import java.util.stream.*;
@@ -21,6 +22,8 @@ public class Forest<T extends Tree> {
     // COMP2100: ROW-MAJOR ORDERING!
     private final List<List<Cell<T>>> grid; 
     private Wind wind;
+
+    // For "neighbours()" method.
     private static final int[][] NEIGHBOUR_OFFSETS = {{-1, -1}, {-1, 0}, {-1, +1},
                                                       {0, -1},  /*CELL*/ {0, +1},
                                                       {+1, -1}, {+1, 0}, {+1, +1}};
@@ -43,7 +46,7 @@ public class Forest<T extends Tree> {
                 if (Math.random() < 0.8) {
 
                     // Here marks the distinction between planting the tree (forest responsibility)
-                    // and generating the tree (factory responsibility)
+                    // and generating the tree (supplier's responsibility - TreeFactory, passed in from Main)
                     try {
                         cell.plantTree(treeSupplier.get());
                     }
@@ -144,71 +147,16 @@ public class Forest<T extends Tree> {
 
     private void spreadFire() {
 
-        boolean[][] igniteNext = new boolean[getRows()][getColumns()];
+        Set<Cell<T>> igniteTheseTrees = cellStream().parallel()
+                                                    .filter((Cell<T> cell) -> cell.hasTree() && cell.getTree().isBurning())
+                                                    .flatMap((Cell<T> source) -> neighbours(source).stream()
+                                                    .filter(target -> catchesFire(source, target)))
+                                                    .collect(Collectors.toSet()); // A set of tree neighbours to be ignited.
 
-        for (int row = 0; row < getRows(); row++) {
-
-            for (int col = 0; col < getColumns(); col++) {
-
-                Cell<T> cell = getCell(row, col);
-
-                if (cell.hasTree() && cell.getTree().isBurning()) {
-
-                    trySpread(row, col, row - 1, col, igniteNext);
-                    trySpread(row, col, row + 1, col, igniteNext);
-                    trySpread(row, col, row, col - 1, igniteNext);
-                    trySpread(row, col, row, col + 1, igniteNext);
-                    trySpread(row, col, row - 1, col - 1, igniteNext);
-                    trySpread(row, col, row - 1, col + 1, igniteNext);
-                    trySpread(row, col, row + 1, col - 1, igniteNext);
-                    trySpread(row, col, row + 1, col + 1, igniteNext);
-                }
-            }
-        }
-
-        // Ignite AFTER checking the entire grid
-        for (int row = 0; row < getRows(); row++) {
-
-            for (int col = 0; col < getColumns(); col++) {
-
-                if (igniteNext[row][col]) {
-                    getCell(row, col).getTree().ignite();
-                }
-            }
+        for(Cell<T> cell : igniteTheseTrees) {
+            cell.getTree().ignite();
         }
     }
-
-    /* DEPRECATED:
-
-    private void trySpread(int sourceRow, int sourceCol, int row, int col, boolean[][] igniteNext) {
-
-        if (!isInBounds(row, col)) {
-            return;
-        }
-
-        Cell<T> target = getCell(row, col);
-
-        if (!target.hasTree()) {
-            return;
-        }
-
-        if (target.getTree().isBurning()) {
-            return;
-        }
-
-        // Base chance is the tree's spreadability (0.0-1.0, already scaled by species in Tree).
-        double chance = target.getTree().getSpreadability();
-
-        if (wind != null) {
-            chance += wind.getSpreadModifier(sourceCol, sourceRow, col, row);
-        }
-
-        chance = Math.max(0.0, Math.min(1.0, chance));
-
-        if (Math.random() < chance) {
-            igniteNext[row][col] = true;
-        }
-    } */
 
     // Read-only version of trySpread() - returns a boolean instead of writing the boolean into array.
     private boolean catchesFire(Cell<T> source, Cell<T> target) {
