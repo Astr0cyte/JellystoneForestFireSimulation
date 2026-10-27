@@ -145,13 +145,20 @@ public class Forest<T extends Tree> {
         }
     }
 
-    private void spreadFire() {
+    // Benchmark switch: true = parallel stream (default), false = sequential.
+    private boolean parallel = true;
 
-        Set<Cell<T>> igniteTheseTrees = cellStream().parallel()
-                                                    .filter((Cell<T> cell) -> cell.hasTree() && cell.getTree().isBurning())
-                                                    .flatMap((Cell<T> source) -> neighbours(source).stream()
-                                                    .filter(target -> catchesFire(source, target)))
-                                                    .collect(Collectors.toSet()); // A set of tree neighbours to be ignited.
+    public void setParallel(boolean parallel) {
+        this.parallel = parallel;
+    }
+
+    void spreadFire() {
+
+        Set<Cell<T>> igniteTheseTrees = (parallel ? cellStream().parallel() : cellStream()) // PARALLEL BY DEFAULT.
+                                        .filter((Cell<T> cell) -> cell.hasTree() && cell.getTree().isBurning())
+                                        .flatMap((Cell<T> source) -> neighbours(source).stream()
+                                        .filter(target -> catchesFire(source, target)))
+                                        .collect(Collectors.toSet()); // A set of tree neighbours to be ignited.
 
         for(Cell<T> cell : igniteTheseTrees) {
             cell.getTree().ignite();
@@ -168,6 +175,7 @@ public class Forest<T extends Tree> {
 
         if (wind != null) {
             // Wind uses x = column, y = row, so columns come first.
+            // This was a decision grandfathered in from AST1 - not important enough to change.
             chance += wind.getSpreadModifier(
                 source.getCol(), source.getRow(),
                 target.getCol(), target.getRow()
