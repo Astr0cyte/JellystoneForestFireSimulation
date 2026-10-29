@@ -100,7 +100,15 @@ public class Main {
         timer = new Timer(TICK_DELAY, event -> {
             forest.update();
 
-            int currentTick = tick.incrementAndGet();
+        int currentTick = tick.incrementAndGet();
+
+        // Stats stream with custom collector.
+        ForestStats stats = forest.cellStream()
+                                    .filter(Cell::hasTree)
+                                    .map(Cell::getTree)
+                                    .collect(ForestStats.collector());
+
+/* DEPRECATED - 5 sequential streams replaced by custom ForestStats.collector().
 
             long trees = forest.cellStream()
                     .filter((Cell<Tree> cell) -> cell.hasTree())
@@ -128,9 +136,10 @@ public class Main {
                     .filter((Cell<Tree> cell) -> cell.hasTree())
                     .map(cell -> cell.getTree())
                     .collect(Collectors.groupingBy(Tree::getSpecies, Collectors.counting()));
-            
+  */
+
             panel.repaint();
-            statsPanel.update(currentTick, trees, healthy, burning, health, speciesCount);
+            statsPanel.update(currentTick, stats);
         });
 
         timer.start();

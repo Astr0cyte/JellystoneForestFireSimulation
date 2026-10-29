@@ -50,20 +50,19 @@ public class StatsPanel extends JPanel {
             component.setForeground(Color.WHITE);
         }
 
-        update(0, 0, 0, 0, 0, Map.of());
+        update(0, new ForestStats(0, 0, 0.0, Map.of()));
     }
 
-    public void update(int tick, long amtOfTrees, long healthyTreeCount, 
-                        long amtBurning, double avgHealth, Map<Tree.TreeSpecies, Long> speciesCount) {
+    public void update(int tick, ForestStats stats) {
 
         tickLabel.setText("Tick: " + tick);
-        treesLabel.setText("Trees: " + amtOfTrees);
-        healthyTreesLabel.setText("Unburnt trees: " + healthyTreeCount);
-        burningLabel.setText("Burning: " + amtBurning);
-        healthLabel.setText("Average health: " + avgHealth);
+        treesLabel.setText("Trees: " + stats.trees());
+        healthyTreesLabel.setText("Unburnt trees: " + stats.healthy());
+        burningLabel.setText("Burning: " + stats.burning());
+        healthLabel.setText("Average health: " + stats.averageHealth());
 
         // Yields one "SPECIES: count" line per species.
-        String speciesLines = speciesCount.entrySet().stream()
+        String speciesLines = stats.speciesCounts().entrySet().stream()
                 .map(entry -> entry.getKey() + ": " + entry.getValue())
                 .collect(Collectors.joining("<br>"));
 
