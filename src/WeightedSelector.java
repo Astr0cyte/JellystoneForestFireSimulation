@@ -22,7 +22,7 @@ public class WeightedSelector implements SpeciesSelector {
 
         double point = Math.random() * total;
 
-        double runningSum = 0.0; // I still have no idea what this is. Come back to this as the next thing I do.
+        double runningSum = 0.0;
 
         for (Tree.TreeSpecies species : weights.keySet()) {
             runningSum += weights.get(species);
