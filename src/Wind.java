@@ -3,8 +3,6 @@ public class Wind {
     private static final double MAX_EXPOSURE = 100.0;
     private static double DOWN = 0.4;
     private static double SIDE = 0.1;
-    // Strong enough to slow fire noticeably against the wind - fire already spreads
-    // about 1 cell per tick (the maximum), so wind can only show by slowing upwind spread.
     private static double UP = -1.0;
 
     private double speed;

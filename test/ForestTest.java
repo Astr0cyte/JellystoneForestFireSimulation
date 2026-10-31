@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 
 public class ForestTest {
 
-    // Forest plants trees at random (80% chance per cell), so most tests
-    // clear the grid first and plant trees by hand where they need them.
     private static Forest<Tree> emptyForest(int rows, int columns) {
         Forest<Tree> forest = new Forest<>(rows, columns, () -> new Tree(0.0));
         forest.cellStream().forEach(Cell::removeTree);
