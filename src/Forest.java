@@ -147,7 +147,9 @@ public class Forest<T extends Tree> {
                 }
 
                 if (!tree.isAlive()) {
+                    // The tree burned down: remove it, and leave scorched ground behind.
                     cell.removeTree();
+                    cell.markScorched();
                 }
             }
         }

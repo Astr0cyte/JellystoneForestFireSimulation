@@ -7,6 +7,10 @@ public class Cell<T extends Tree> {
     private T tree;
     private double windExposure;
 
+    // True once a tree has burned down here - the ground stays scorched
+    // for the rest of the simulation (drawn by ForestPanel).
+    private boolean scorched;
+
     Cell(int row, int col) {
         this.row = row;
         this.col = col;
@@ -38,6 +42,14 @@ public class Cell<T extends Tree> {
 
     public void removeTree() {
         this.tree = null;
+    }
+
+    public boolean isScorched() {
+        return scorched;
+    }
+
+    public void markScorched() {
+        this.scorched = true;
     }
 
     public boolean isEmpty() {

@@ -24,6 +24,12 @@ public class ForestPanel extends JPanel {
     // Panel becomes 60 * 15 by 40 * 15
     private static final int CELL_SIZE = 15;
 
+    // Dark brown "scorched ground" drawn behind burning trees.
+    private static final Color BURNING_GROUND = new Color(58, 21, 0);
+
+    // Near-black brown left permanently where a tree has burned down.
+    private static final Color SCORCHED_EARTH = new Color(26, 16, 12);
+
     public ForestPanel(Forest<? extends Tree> forest, Lightning lightning) {
         this.forest = forest;
         this.lightning = lightning;
@@ -65,6 +71,10 @@ public class ForestPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // Smooth edges on drawn shapes (e.g. the circles behind burning trees) -
+        // without this, small circles look jagged.
+        ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         int cellWidth = getWidth() / forest.getColumns();
         int cellHeight = getHeight() / forest.getRows();
 
@@ -101,12 +111,22 @@ public class ForestPanel extends JPanel {
                 }
 
                 if (!cell.hasTree()) {
+                    // Burnt-out cells keep their scorched ground; never-planted cells stay black.
+                    // Full cell (no padding), so the burn scar is one continuous area.
+                    if (cell.isScorched()) {
+                        g.setColor(SCORCHED_EARTH);
+                        g.fillRect(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
+                    }
                     continue;
                 }
 
                 Tree tree = cell.getTree();
 
                 if (tree.isBurning()) {
+                    // A dark brown circle filling the cell, with the fire drawn on top.
+                    g.setColor(BURNING_GROUND);
+                    g.fillOval(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
+
                     drawCell(g, fireImage, Color.ORANGE, x, y, width, height);
                     continue;
                 }
