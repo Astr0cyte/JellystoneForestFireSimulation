@@ -2,6 +2,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ public class TreeFactoryTest {
         TreeFactory factory = new TreeFactory();
 
         for (int i = 0; i < 500; i++) {
-            Tree tree = factory.generateTree();
+            Tree tree = factory.generateTree(List.of());
 
             assertNotNull(tree);
             assertTrue(tree.isAlive());
@@ -30,7 +31,7 @@ public class TreeFactoryTest {
         TreeFactory factory = new TreeFactory();
 
         for (int i = 0; i < 500; i++) {
-            double spreadability = factory.generateTree().getSpreadability();
+            double spreadability = factory.generateTree(List.of()).getSpreadability();
             assertTrue(spreadability >= 0.3 * 0.8 && spreadability <= 1.0,
                     "spreadability " + spreadability);
         }
@@ -44,7 +45,7 @@ public class TreeFactoryTest {
         Set<Tree.TreeSpecies> seen = EnumSet.noneOf(Tree.TreeSpecies.class);
 
         for (int i = 0; i < 2000; i++) {
-            seen.add(factory.generateTree().getSpecies());
+            seen.add(factory.generateTree(List.of()).getSpecies());
         }
 
         assertEquals(EnumSet.allOf(Tree.TreeSpecies.class), seen);
@@ -102,7 +103,7 @@ public class TreeFactoryTest {
 
     @Test
     void speciesSelectorCanBeALambda() {
-        SpeciesSelector selector = () -> Tree.TreeSpecies.EUCALYPTUS;
+        SpeciesSelector selector = neighbourSpecies -> Tree.TreeSpecies.EUCALYPTUS;
         assertEquals(Tree.TreeSpecies.EUCALYPTUS, selector.selectSpecies());
     }
 }

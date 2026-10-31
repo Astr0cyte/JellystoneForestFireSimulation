@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.*;
 import java.util.Arrays;
@@ -28,27 +29,49 @@ public class Forest<T extends Tree> {
                                                       {0, -1},  /*CELL*/ {0, +1},
                                                       {+1, -1}, {+1, 0}, {+1, +1}};
 
-    // treeSupplier is anything that can produce a new generic on demand,
-    // e.g. factory::generateTree.
     public Forest(int rows, int columns, Supplier<T> treeSupplier) {
+        this(rows, columns, neighbourSpecies -> treeSupplier.get());
+    }
 
+    public Forest(int rows, int columns, Function<List<Tree.TreeSpecies>, T> treeSource) {
+
+        // Building is now done in TWO passes. 
+        // In pass 2, The functionality of neighbour() is required, and that relies on a fully built grid.
+        // neighbour() is required for the NEW clustering (biome) species selector. 
+
+        // First pass: build grid.
         grid = new ArrayList<>(rows);
 
         for (int row = 0; row < rows; row++) {
-
             List<Cell<T>> currentRow = new ArrayList<>(columns);
 
             for (int col = 0; col < columns; col++) {
+                currentRow.add(new Cell<>(row, col));
+            }
 
-                Cell<T> cell = new Cell<>(row, col);
+            grid.add(currentRow);
+
+        }
+    
+    // Second pass: plant trees + get neighbour information.
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+
+                Cell<T> cell = getCell(row, col);
 
                 // 80% chance of there being a tree
                 if (Math.random() < 0.8) {
 
-                    // Here marks the distinction between planting the tree (forest responsibility)
-                    // and generating the tree (supplier's responsibility - TreeFactory, passed in from Main)
+                    // Get neighbour information using a stream & collecting toList().
+                    List<Tree.TreeSpecies> neighbourSpecies = neighbours(cell).stream()
+                            .filter(Cell::hasTree)
+                            .map(neighbour -> neighbour.getTree().getSpecies())
+                            .toList();
+
+                    // Planting the tree: forest responsibility.
+                    // Generating the tree: supplier's responsibility - TreeFactory, passed in from Main.
                     try {
-                        cell.plantTree(treeSupplier.get());
+                        cell.plantTree(treeSource.apply(neighbourSpecies));
                     }
                     catch (IllegalArgumentException e) {
                         // An invalid tree shouldn't stop the whole forest being
@@ -56,11 +79,7 @@ public class Forest<T extends Tree> {
                         System.err.println("Skipped tree at (" + row + ", " + col + "): " + e.getMessage());
                     }
                 }
-
-                currentRow.add(cell);
             }
-
-            grid.add(currentRow);
         }
     }
 
