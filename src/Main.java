@@ -20,7 +20,30 @@ public class Main {
         // Wind is optional (Forest checks for null), so if it can't be
         // created or applied, run the simulation without it.
         try {
-            Wind wind = new Wind(30, "EAST", 30, 20, 15);
+            // Random cardinal direction each run.
+            String[] directions = {"NORTH", "SOUTH", "EAST", "WEST"};
+            String direction = directions[(int) (Math.random() * directions.length)];
+
+            // The wind starts at the middle of the edge it blows FROM
+            // (e.g. an EAST wind blows from the west edge towards the east).
+            // Wind uses x = column, y = row.
+            int lastCol = forest.getColumns() - 1;
+            int lastRow = forest.getRows() - 1;
+
+            int startX = switch (direction) {
+                case "EAST" -> 0;
+                case "WEST" -> lastCol;
+                default -> lastCol / 2;
+            };
+
+            int startY = switch (direction) {
+                case "SOUTH" -> 0;
+                case "NORTH" -> lastRow;
+                default -> lastRow / 2;
+            };
+
+            // Full strength, with a radius large enough to cover the whole grid.
+            Wind wind = new Wind(100, direction, startX, startY, 70);
             forest.setWind(wind);
         }
         catch (WindArgumentException e) {
@@ -85,6 +108,7 @@ public class Main {
 
         ForestPanel panel = new ForestPanel(forest, lightning);
         StatsPanel statsPanel = new StatsPanel();
+        statsPanel.showWind(forest.getWind());
 
         // Stats panel sits on the right next to simulation.
         window.add(panel, BorderLayout.CENTER);

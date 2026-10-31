@@ -1,4 +1,4 @@
-// Utility class holding the ignition algorithms (the "strategies").
+// A utility class holding the ignition algorithms (the "strategies").
 // Each method builds and returns an IgnitionBehaviour as a lambda, which an
 // IgnitionSource record then holds and runs when it is ignited.
 public final class IgnitionBehaviours {
@@ -9,17 +9,8 @@ public final class IgnitionBehaviours {
 
     }
 
-    // Calling this does NOT light anything. It builds the ignition code,
-    // which remembers `row`, and returns it to be run later.
     static IgnitionBehaviour backburning(int row) {
 
-        // This lambda IS an IgnitionBehaviour: its two parameters match
-        // IgnitionBehaviour.ignite(Forest<? extends Tree>, IgnitionSource),
-        // and its body becomes that method's body. Java works out the
-        // parameter types from the interface, so they aren't written here.
-        //
-        // `row` comes from the enclosing method, not the lambda - the lambda
-        // captures it. That's only allowed because row is never changed.
         return (forest, ignitionSource) -> {
 
             if (row < 0 || row >= forest.getRows()) {
@@ -52,8 +43,7 @@ public final class IgnitionBehaviours {
         
         return (forest, ignitionSource) -> {
 
-            // Local copy: the captured variables (row) must be effectively final,
-            // so the search further below moves this instead.
+            // Local copy: the captured variables (row) must be effectively final.
             int searchRow = row;
 
             if (!forest.isInBounds(row, col)) {
@@ -66,7 +56,7 @@ public final class IgnitionBehaviours {
             Cell<? extends Tree> cell = forest.getCell(row, col);
 
 
-            // "While there is no valid tree and we are within bounds."
+            // "While there is no valid tree and we are within bounds".
             while(!cell.hasTree() && forest.isInBounds(searchRow, col)) {
                 cell = forest.getCell(searchRow, col);
                 searchRow++;

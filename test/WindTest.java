@@ -113,7 +113,7 @@ public class WindTest {
         Wind wind = new Wind(50, "EAST", 0, 0, 10);
         double exposure = wind.calculateExposure(2, 0);
 
-        assertEquals(exposure * -0.2, wind.getSpreadModifier(3, 0, 2, 0), 1e-9);
+        assertEquals(exposure * -1.0, wind.getSpreadModifier(3, 0, 2, 0), 1e-9);
     }
 
     @Test

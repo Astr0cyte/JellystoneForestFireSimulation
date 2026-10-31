@@ -13,7 +13,7 @@ public class StatsPanel extends JPanel {
     private final JLabel burningLabel = new JLabel();
     private final JLabel healthLabel = new JLabel();
     private final JLabel speciesLabel = new JLabel();
-
+    private final JLabel windLabel = new JLabel("Wind: none");
 
     public StatsPanel() {
 
@@ -33,12 +33,14 @@ public class StatsPanel extends JPanel {
         burningLabel.setFont(burningLabel.getFont().deriveFont(16.f));
         healthLabel.setFont(healthLabel.getFont().deriveFont(16.f));
         speciesLabel.setFont(speciesLabel.getFont().deriveFont(16.f));
+        windLabel.setFont(windLabel.getFont().deriveFont(16.f));
 
         setBackground(Color.BLACK);
     
         add(title);
         add(Box.createVerticalStrut(10));
         add(tickLabel);
+        add(windLabel);
         add(treesLabel);
         add(healthyTreesLabel);
         add(burningLabel);
@@ -51,6 +53,14 @@ public class StatsPanel extends JPanel {
         }
 
         update(0, new ForestStats(0, 0, 0.0, Map.of()));
+    }
+
+    // Called once at startup - the wind doesn't change during a run.
+    // A null wind (creation failed in Main) leaves the label as "Wind: none".
+    public void showWind(Wind wind) {
+        if (wind != null) {
+            windLabel.setText("Wind: " + wind.getDirection());
+        }
     }
 
     public void update(int tick, ForestStats stats) {
