@@ -3,7 +3,7 @@ import java.util.List;
 
 public class ClusteringSelector implements SpeciesSelector {
     
-    private static final double CLUSTER_BONUS = 3.0;
+    private static final double CLUSTER_BONUS = 12.0;
 
     private EnumMap<Tree.TreeSpecies, Double> weights;
 

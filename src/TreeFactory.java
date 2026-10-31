@@ -29,7 +29,7 @@ public class TreeFactory {
         weights.put(Tree.TreeSpecies.BIRCH, 2.5);
         weights.put(Tree.TreeSpecies.SPRUCE, 2.5);
         weights.put(Tree.TreeSpecies.EUCALYPTUS, 4.0);
-        weights.put(Tree.TreeSpecies.JUNGLE, 1.0);
+        weights.put(Tree.TreeSpecies.JUNGLE, 2.0);
     }
 
     public Tree generateTree(List<Tree.TreeSpecies> neighbourSpecies) {
