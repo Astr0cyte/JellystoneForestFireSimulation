@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.*;
-import java.util.Arrays;
 
 /* T is the class of object this forest holds: Forest owns and plants
  its trees, so it needs to know the exact type, unlike the classes
