@@ -3,10 +3,8 @@
 // IgnitionSource record then holds and runs when it is ignited.
 public final class IgnitionBehaviours {
 
-    private static final double WAVELENGTH = 3.0; // For backburning ignition behaviour
+    private static final double BB_WAVELENGTH = 3.0; // For backburning ignition behaviour
 
-    // Private so nobody can create an IgnitionBehaviours object - it only
-    // exists to group static methods.
     private IgnitionBehaviours() {
 
     }
@@ -28,7 +26,7 @@ public final class IgnitionBehaviours {
                 return;
             }
 
-            double frequency = 2 * Math.PI / WAVELENGTH;
+            double frequency = 2 * Math.PI / BB_WAVELENGTH;
 
             for (int col = 0; col < forest.getColumns(); col++) {
 

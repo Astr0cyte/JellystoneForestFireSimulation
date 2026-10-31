@@ -1,4 +1,5 @@
 import java.util.EnumMap;
+import java.util.List;
 
 public class TreeFactory {
     
@@ -27,7 +28,7 @@ public class TreeFactory {
         weights.put(Tree.TreeSpecies.JUNGLE, 1.0);
     }
 
-    public Tree generateTree() {
+    public Tree generateTree(List<Tree.TreeSpecies> neighbourSpecies) {
 
         //Generate random spreadability value - random variation between individual trees.
         double spreadability = MIN_SPREADABILITY + Math.random() * (MAX_SPREADABILITY - MIN_SPREADABILITY);
