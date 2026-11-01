@@ -22,7 +22,7 @@ public class Forest<T extends Tree> {
         this(rows, columns, neighbourSpecies -> treeSupplier.get());
     }
 
-    public Forest(int rows, int columns, Function<List<Tree.TreeSpecies>, T> treeSource) {
+    public Forest(int rows, int columns, Function<List<Tree.TreeSpecies>, T> treeGenerator) {
 
         // Building is now done in TWO passes. 
         // In pass 2, The functionality of neighbour() is required, and that relies on a fully built grid.
@@ -58,10 +58,10 @@ public class Forest<T extends Tree> {
                             .toList();
 
                     // Planting the tree: forest responsibility.
-                    // Generating the tree: supplier's responsibility - TreeFactory, passed in from Main.
+                    // Generating the tree: function's responsibility - TreeFactory, passed in from Main.
                     try {
-                        cell.plantTree(treeSource.apply(neighbourSpecies));
-                    }
+                        cell.plantTree(treeGenerator.apply(neighbourSpecies)); // treeGenerator is TreeFactory.generateTree passed in from Main.
+                    }                                                          
                     catch (IllegalArgumentException e) {
                         // An invalid tree shouldn't stop the whole forest being
                         // built - leave this cell empty and carry on.
