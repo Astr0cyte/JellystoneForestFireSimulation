@@ -161,11 +161,28 @@ public class IgnitionSourceTest {
     }
 
     @Test
-    void arsonFailsOnTreeLessFlammableThanSource() {
+    void arsonThrowsWhenNoTreeBelowIsFlammableEnough() {
+        // Every tree is less flammable than the source, so the whole column is searched
+        // and the failure is reported, instead of silently lighting nothing.
         Forest<Tree> forest = fullForest(3, 3, 0.2);
+        IgnitionSource source = new IgnitionSource("Arson", 0.55, 0.5, IgnitionBehaviours.arson(1, 1));
+
+        assertThrows(IllegalArgumentException.class, () -> source.ignite(forest));
+        assertEquals(0, burningCount(forest));
+    }
+
+    @Test
+    void arsonSkipsTooResistantTreeAndLightsNextFlammableOneBelow() {
+        Forest<Tree> forest = emptyForest(4, 3);
+        Tree resistant = new Tree(0.2);   // below the source's 0.5 threshold
+        Tree flammable = new Tree(1.0);
+        forest.getCell(1, 1).plantTree(resistant);
+        forest.getCell(2, 1).plantTree(flammable);
+
         new IgnitionSource("Arson", 0.55, 0.5, IgnitionBehaviours.arson(1, 1)).ignite(forest);
 
-        assertEquals(0, burningCount(forest));
+        assertFalse(resistant.isBurning());
+        assertTrue(flammable.isBurning());
     }
 
     @Test

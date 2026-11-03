@@ -40,6 +40,7 @@ public record ForestStats(
         }
 
         // COMBINER: merge recursive tally instances together (during parallel streams).
+        // Stats collection is not parallel, so this does not run.
         Tally combine(Tally other) {
             this.trees += other.trees;
             this.burning += other.burning;

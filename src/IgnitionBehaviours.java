@@ -1,4 +1,4 @@
-// A utility class holding the ignition algorithms (the "strategies").
+// This is a utility class holding the ignition algorithms (the "strategies").
 // Each method builds and returns an IgnitionBehaviour as a lambda, which an
 // IgnitionSource record then holds and runs when it is ignited.
 public final class IgnitionBehaviours {
@@ -55,24 +55,28 @@ public final class IgnitionBehaviours {
 
             Cell<? extends Tree> cell = forest.getCell(row, col);
 
+            // Arson only takes hold on sufficiently flammable fuel - a tree whose
+            // spreadability is at least the source's.
+            double threshold = ignitionSource.spreadability();
 
-            // "While there is no valid tree and we are within bounds".
-            while(!cell.hasTree() && forest.isInBounds(searchRow, col)) {
+            // "While this cell isn't suitable fuel and we are within bounds", keep
+            // searching down the column. Previously the search stopped at the first
+            // tree, and if that tree was too resistant the fire silently never started.
+            while ((!cell.hasTree() || cell.getTree().getSpreadability() < threshold)
+                    && forest.isInBounds(searchRow, col)) {
                 cell = forest.getCell(searchRow, col);
                 searchRow++;
             }
 
-            // Ran out of bounds while retrying for a valid cell.
-            // hasTree() would still be false if this is the case.
-            if (!cell.hasTree()) {
+            // Ran out of bounds without finding suitable fuel - fail loudly
+            // (Main catches this and reports it) rather than silently lighting nothing.
+            if (!cell.hasTree() || cell.getTree().getSpreadability() < threshold) {
 
                 throw new IllegalArgumentException(
-                    "Ran out of bounds while trying to find a tree to ignite.");
+                    "Ran out of bounds while trying to find a flammable enough tree to ignite.");
             }
-            
-            if (cell.getTree().getSpreadability() >= ignitionSource.spreadability()) {
-                cell.getTree().ignite(ignitionSource.severity());
-            }
+
+            cell.getTree().ignite(ignitionSource.severity());
         };
     }
 }

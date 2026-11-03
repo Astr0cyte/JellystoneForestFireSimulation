@@ -60,8 +60,8 @@ public class Forest<T extends Tree> {
                     // Planting the tree: forest responsibility.
                     // Generating the tree: function's responsibility - TreeFactory, passed in from Main.
                     try {
-                        cell.plantTree(treeGenerator.apply(neighbourSpecies)); // treeGenerator is TreeFactory.generateTree passed in from Main.
-                    }                                                          
+                        cell.plantTree(treeGenerator.apply(neighbourSpecies)); // treeGenerator is 
+                    }                                                          // TreeFactory.generateTree passed in from Main.
                     catch (IllegalArgumentException e) {
                         // An invalid tree shouldn't stop the whole forest being
                         // built - leave this cell empty and carry on.

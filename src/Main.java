@@ -12,8 +12,8 @@ public class Main {
         TreeFactory factory = new TreeFactory();
 
         // factory::generateTree hands the forest the generateTree method
-        // itself, which the forest calls once per tree it plants.
-        Forest<Tree> forest = new Forest<>(40, 60, factory::generateTree);
+        // itself, which the forest calls once per tree planted.
+        Forest<Tree> forest = new Forest<>(40, 60, factory::generateTree); // 40 x 60 default size.
 
         // Wind is optional (Forest checks for null), so if it can't be
         // created or applied, run the simulation without it.
