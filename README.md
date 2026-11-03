@@ -4,8 +4,6 @@ A grid-based forest fire simulation in Java (Swing), built for COMP2000. A fores
 mixed tree species is generated, a fire is started, and it spreads tick by tick,
 shaped by tree species, biomes and wind, while live statistics are shown alongside.
 
-> Please note the following bug: sometimes the fire ignition fails. If no visible fire spread is present, please re-run the program. It only happens occasionally, so re-rerunning should "solve" the issue.
-
 ## Features
 
 ### Forest generation
